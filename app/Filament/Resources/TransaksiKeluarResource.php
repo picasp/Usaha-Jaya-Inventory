@@ -181,6 +181,7 @@ class TransaksiKeluarResource extends Resource
                 ->markdown()
                 ->sortable(),
             ])
+            ->defaultSort('tgl_penjualan', 'desc')
             ->filters([
                 //
             ])
@@ -196,6 +197,8 @@ class TransaksiKeluarResource extends Resource
                 ->icon('heroicon-o-printer')
                 ->url(fn (TransaksiKeluar $record) => route('pdf', $record))
                 ->openUrlInNewTab(), 
+                Tables\Actions\DeleteAction::make()
+                ->label('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

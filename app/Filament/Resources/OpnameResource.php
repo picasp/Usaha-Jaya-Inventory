@@ -119,7 +119,10 @@ class OpnameResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->color('warning'),
+                Tables\Actions\DeleteAction::make()
+                ->label('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

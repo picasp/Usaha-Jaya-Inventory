@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BarangResource\Pages;
 use App\Filament\Resources\BarangResource\RelationManagers;
 use App\Models\Barang;
+use Filament\Actions\DeleteAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -84,7 +85,10 @@ class BarangResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->color('warning'),
+                Tables\Actions\DeleteAction::make()
+                ->label('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

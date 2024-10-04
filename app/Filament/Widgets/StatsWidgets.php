@@ -27,6 +27,10 @@ class StatsWidgets extends BaseWidget
             ->whereYear('tgl_penjualan', $currentYear)
             ->count();
 
+        $totalPengeluaranBulanIni = TransaksiMasuk::whereMonth('tgl_pembelian', $currentMonth)
+            ->whereYear('tgl_pembelian', $currentYear)
+            ->sum('total_harga_masuk');
+
         // Previous month sales amount and transaction count
         $totalPenjualanBulanLalu = TransaksiKeluar::whereMonth('tgl_penjualan', $previousMonth)
             ->whereYear('tgl_penjualan', $previousMonthYear)
@@ -35,11 +39,14 @@ class StatsWidgets extends BaseWidget
         $totalTransaksiBulanLalu = TransaksiKeluar::whereMonth('tgl_penjualan', $previousMonth)
             ->whereYear('tgl_penjualan', $previousMonthYear)
             ->count();
+        
+        $totalPengeluaranBulanLalu = TransaksiMasuk::whereMonth('tgl_pembelian', $previousMonth)
+            ->whereYear('tgl_pembelian', $previousMonthYear)
+            ->sum('total_harga_masuk');
 
         // Calculate percentage changes
-        $penjualanChange = $totalPenjualanBulanLalu > 0
-            ? (($totalPenjualanBulanIni - $totalPenjualanBulanLalu) / $totalPenjualanBulanLalu) * 100
-            : 0;
+        $penjualanChange = $totalPenjualanBulanIni - $totalPenjualanBulanLalu;
+        $pengeluaranChange = $totalPengeluaranBulanIni - $totalPengeluaranBulanLalu;
 
         $transaksiChange = $totalTransaksiBulanLalu > 0
             ? (($totalTransaksiBulanIni - $totalTransaksiBulanLalu) / $totalTransaksiBulanLalu) * 100
@@ -48,11 +55,25 @@ class StatsWidgets extends BaseWidget
         return [
             Stat::make('Total Barang', Barang::query()->count('id')),
             Stat::make('Supplier', Supplier::query()->count('id')),
-            Stat::make('Total Penjualan Bulan Ini', 'Rp. ' . number_format($totalPenjualanBulanIni, 0, ',', '.'))
-                ->description($penjualanChange >= 0 ? 'Naik ' . round($penjualanChange, 2) . '%' : 'Turun ' . round($penjualanChange, 2) . '%')
+            Stat::make('Pendapatan Bulan Ini', 'Rp. ' . number_format($totalPenjualanBulanIni, 0, ',', '.'))
+                ->description($penjualanChange >= 0 
+                ? 'Naik Rp. ' . number_format($penjualanChange, 0, ',', '.') 
+                : 'Turun Rp. ' . number_format(abs($penjualanChange), 0, ',', '.'))
+                ->descriptionIcon($penjualanChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($penjualanChange >= 0 ? 'success' : 'danger'),
-            Stat::make('Jumlah Transaksi Bulan Ini', $totalTransaksiBulanIni . ' transaksi')
-                ->description($transaksiChange >= 0 ? 'Naik ' . round($transaksiChange, 2) . '%' : 'Turun ' . round($transaksiChange, 2) . '%')
+
+            Stat::make('Pengeluaran Bulan Ini', 'Rp. ' . number_format($totalPengeluaranBulanIni, 0, ',', '.'))
+                ->description($pengeluaranChange >= 0 
+                    ? 'Naik Rp. ' . number_format($pengeluaranChange, 0, ',', '.') 
+                    : 'Turun Rp. ' . number_format(abs($pengeluaranChange), 0, ',', '.'))
+                ->color($pengeluaranChange >= 0 ? 'danger' : 'success')
+                ->descriptionIcon($pengeluaranChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down'),
+
+            Stat::make('Penjualan Bulan Ini', $totalTransaksiBulanIni)
+                ->description($transaksiChange >= 0 
+                ? 'Naik ' . round($transaksiChange, 2) . '%' 
+                : 'Turun ' . round($transaksiChange, 2) . '%')
+                ->descriptionIcon($transaksiChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($transaksiChange >= 0 ? 'success' : 'danger'),
         ];
     }

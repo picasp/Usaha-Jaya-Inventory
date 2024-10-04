@@ -186,11 +186,15 @@ class TransaksiMasukResource extends Resource
                 ->markdown()
                 ->sortable(),
             ])
+            ->defaultSort('tgl_pembelian', 'desc')
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->color('warning'),
+                Tables\Actions\DeleteAction::make()
+                ->label('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
