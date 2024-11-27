@@ -42,7 +42,7 @@
     <tbody>
         @foreach($data as $item)
         <tr class="border dark:border-gray-700">
-            <td class="px-4 py-2 border dark:border-gray-700">{{ \Carbon\Carbon::parse($item['Tanggal'])->format('d-m-Y') }}</td>
+            <td class="px-4 py-2 border dark:border-gray-700">{{ \Carbon\Carbon::parse($item['Tanggal'])->format('d/m/Y') }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Nama Barang'] }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Stok Sistem'] }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Stok Fisik'] }}</td>
