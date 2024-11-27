@@ -26,11 +26,12 @@ class PenjualanReport extends Report
 {
     public ?string $heading = "Laporan Penjualan";
     static ?string $navigationLabel = 'Laporan Penjualan';
-    public ?array $filters = [];
+    public ?array $filters = [
+        'tgl_penjualan' => null,
+    ];
 
     public function setFilters(array $filters)
     {
-        Log::info('Filters set:', $filters);
         $this->filters = $filters;
     }
 
@@ -45,26 +46,24 @@ class PenjualanReport extends Report
                 ->format('d/m/Y')
                 ->required()
                 ->reactive()  // Ensures the report reacts to filter changes
-                ->afterStateUpdated(function ($state, callable $get) {
-                    Log::info('Date filter updated:', [$state]);
-                    $this->setFilters(['tgl_penjualan' => $state]);  // Set the filters
-                    $this->emitSelf('refreshHeaderAndReport');  // Force the header to refresh after filter update
+                ->afterStateUpdated(function ($state) {
+                    // Update state filters saat rentang tanggal diubah
+                    $this->setFilters(['tgl_penjualan' => $state]);
+                    $this->refreshHeaderAndBody();  // Render ulang header dan body
                 }),
             ]);
     }
 
-    protected function getListeners(): array
+    public function refreshHeaderAndBody()
     {
-        return [
-            'refreshHeaderAndReport' => '$refresh',  // Add listener for refreshing header
-        ];
+        $this->emitSelf('$refresh');  // Memastikan komponen di-refresh
     }
 
-    public function refreshHeaderAndReport()
+    public function updated($name, $value)
     {
-        // Refresh the component (header + body)
-        $this->refreshReport();
-        $this->emit('$refresh');
+        if ($name === 'filters.tgl_penjualan') {
+            $this->refreshHeaderAndBody();
+        }
     }
 
     public function header(Header $header): Header
@@ -183,12 +182,6 @@ class PenjualanReport extends Report
         ]);
 
         return $results;
-    }
-
-    protected function refreshReport()
-    {
-        Log::info('Report is being refreshed');
-        $this->emit('refresh');
     }
 }
 

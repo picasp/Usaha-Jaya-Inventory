@@ -27,6 +27,7 @@ use Filament\Resources\Pages\EditRecord;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 
 class TransaksiKeluarResource extends Resource
 {
@@ -67,7 +68,23 @@ class TransaksiKeluarResource extends Resource
                             ->columnSpan([
                                 'md' => 5,
                             ])
-                            ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('harga', Barang::find($state)?->harga_jual ?? 0)),
+                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                $barang = Barang::find($state);
+                        
+                                if ($barang) {
+                                    // Set the price and check stock
+                                    $set('harga', $barang->harga_jual);
+                        
+                                    // Check stock level and notify if low
+                                    if ($barang->stok < 10) {
+                                        Notification::make()
+                                            ->title('Stok Menipis')
+                                            ->danger()
+                                            ->body('Stok barang "' . $barang->nama_barang . '" hanya tersisa ' . $barang->stok . ' ' .$barang->satuan . '.')
+                                            ->send();
+                                    }
+                                }
+                            }),
 
                             TextInput::make('qty')
                             ->label('Kuantitas')

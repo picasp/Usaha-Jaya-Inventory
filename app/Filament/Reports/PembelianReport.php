@@ -27,30 +27,10 @@ class PembelianReport extends Report
 {
     public ?string $heading = "Laporan Pembelian";
     static ?string $navigationLabel = 'Laporan Pembelian';
-    public ?array $filters = [];
-
-    public function setFilters(array $filters)
-    {
-        $this->filters = $filters;
-    }
+    protected ?string $dateRange = null;
 
     public function header(Header $header): Header
     {
-        // Retrieve the filters applied (assuming filters come through the request or passed down)
-        $filters = $this->filters;
-        $dateRangeText = "Periode: Semua waktu"; // Default text if no range is selected
-
-        // Check if filters are available and the date range is set
-        if (!empty($filters['tgl_pembelian'])) {
-            $dateRange = $filters['tgl_pembelian'];
-            $dates = explode(' - ', $dateRange);
-            if (count($dates) === 2) {
-                $startDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[0]));
-                $endDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($dates[1]));
-                $dateRangeText = "Periode: {$startDate->format('d M Y')} - {$endDate->format('d M Y')}";
-            }
-        }
-
         return $header
             ->schema([
                 Header\Layout\HeaderRow::make()
@@ -61,7 +41,7 @@ class PembelianReport extends Report
                             Text::make("Laporan Pembelian Barang UD Usaha Jaya")
                                 ->title(),
                             Text::make("Dibuat pada: " . now()->format('Y-m-d H:i:s')),
-                            Text::make($dateRangeText)
+                            Text::make("Rentang Tanggal: " . ($this->dateRange ?? '-')),
                         ]),
                 ]),
             ]);
@@ -78,15 +58,24 @@ class PembelianReport extends Report
                             fn(?array $filters) => $this->purchaseSummary($filters)
                         )
                         ->columns([
+                            BodyTextColumn::make('Tanggal')
+                            ->label('Tanggal')
+                            ->dateTime('d/m/Y'),
                             BodyTextColumn::make('Nama Barang')
-                                ->label('Nama Barang'),
-                            BodyTextColumn::make('Total Dibeli')
-                                ->label('Total Dibeli'),
+                            ->label('Nama Barang')
+                            ->extraAttributes(['style' => 'width: 150px;']),
+                            BodyTextColumn::make('Supplier')
+                            ->label('Pemasok')
+                            ->extraAttributes(['style' => 'width: 150px;']),
+                            BodyTextColumn::make('Stok')
+                            ->label('Stok Diterima')
+                            ->extraAttributes(['style' => 'width: 120px;']),
                             BodyTextColumn::make('Satuan')
-                            ->label('satuan'),
+                            ->label('Satuan'),
                             BodyTextColumn::make('Total Pengeluaran')
-                                ->label('Total Pengeluaran')
-                                ->prefix('Rp. '),
+                            ->label('Total Pembelian')
+                            ->prefix('Rp. ')
+                            ->extraAttributes(['style' => 'width: 150px;']),
                         ]),
                 ]),
             ]);
@@ -101,48 +90,58 @@ class PembelianReport extends Report
                 ->placeholder("Pilih rentang tanggal")
                 ->suffixIcon('heroicon-o-calendar')
                 ->format('d/m/Y')
-                ->required()
-                ->reactive()  // Ensures the report reacts to filter changes
-                ->afterStateUpdated(fn ($state, callable $get) => $this->refreshReport()),  // Forces refresh after state change
+                ->required() 
+                ->reactive()
+                ->afterStateUpdated(function ($state) {
+                    // Update rentang tanggal saat filter diubah
+                    $this->dateRange = $state; // Menyimpan rentang tanggal ke dalam properti
+                }),
             ]);
+    }
+
+    public function submit()
+    {
+        // Ambil nilai dari filter dan simpan rentang tanggal ke dalam properti
+        $this->dateRange = request()->input('tgl_pembelian'); // Mengambil rentang tanggal dari request
     }
 
     public function purchaseSummary(?array $filters)
     {
-        Log::info('Filters received in salesSummary:', $filters);
-    
-        // Set the filters in the report instance
-        $this->setFilters($filters);
     
         $query = TransaksiMasukItem::query()
-            ->join('barangs', 'transaksi_masuk_items.barang_id', '=', 'barangs.id')
             ->join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
+            ->join('barangs', 'transaksi_masuk_items.barang_id', '=', 'barangs.id')
+            ->join('suppliers', 'transaksi_masuks.supplier_id', '=', 'suppliers.id')
             ->select(
-                'barangs.nama_barang','barangs.satuan',
+                'transaksi_masuks.tgl_pembelian',
+                'barangs.nama_barang',
+                'suppliers.nama_supplier',
+                'barangs.satuan',
                 DB::raw('SUM(transaksi_masuk_items.qty) as total_quantity'),
                 DB::raw('SUM(transaksi_masuk_items.total) as total_expense')
             );
 
-        if (!empty($filters['tgl_pembelian'])) {
-            $dateRange = $filters['tgl_pembelian'];
-            $dates = explode(' - ', $dateRange);
-            if (count($dates) === 2) {
-                $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]));
-                $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]));
-
-                if ($startDate && $endDate) {
+            if (!empty($filters['tgl_pembelian'])) {
+                $dateRange = $filters['tgl_pembelian'];
+                $dates = explode(' - ', $dateRange);
+        
+                if (count($dates) === 2) {
+                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]));
+                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]));
                     $query->whereBetween('transaksi_masuks.tgl_pembelian', [$startDate->startOfDay(), $endDate->endOfDay()]);
                 }
             }
-        }
 
-        $query->groupBy('barangs.nama_barang', 'barangs.satuan');
+        $query->groupBy('barangs.nama_barang', 'barangs.satuan', 'transaksi_masuks.tgl_pembelian', 'suppliers.nama_supplier');
     
         $results = $query->get()->map(function ($item) {
             return [
+                'Tanggal' => $item->tgl_pembelian,
                 'Nama Barang' => $item->nama_barang,
+                'Supplier' => $item->nama_supplier,
+                'Stok' => $item->total_quantity,
                 'Satuan' => $item->satuan,
-                'Total Dibeli' => $item->total_quantity,
+                // 'Total Dibeli' => $item->total_quantity,
                 'Total Pengeluaran' => number_format($item->total_expense, 0, ',', '.'),
             ];
         });
@@ -152,18 +151,16 @@ class PembelianReport extends Report
         });
 
         $results->push([
+            'Tanggal' => '',
             'Nama Barang' => 'TOTAL',
+            'Supplier' => '',
+            'Stok' => '',
             'Satuan' => '',
-            'Total Dibeli' => $results->sum('Total Dibeli'),
+            // 'Total Dibeli' => $results->sum('Total Dibeli'),
             'Total Pengeluaran' => number_format($totalExpense, 0, ',', '.'),
         ]);
 
         return $results;
-    }
-
-    protected function refreshReport()
-    {
-        $this->emit('refresh');
     }
 }
 
