@@ -2,14 +2,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\TransaksiMasukItem;
+use App\Models\TransaksiKeluarItem;
 use Illuminate\Support\Facades\DB;
 
-class LaporanBeliController extends Controller
+class LaporanJualController extends Controller
 {
     public function index(Request $request)
     {
-        $query = TransaksiMasukItem::query()
+        $query = TransaksiKeluarItem::query()
             ->join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
             ->join('barangs', 'transaksi_masuk_items.barang_id', '=', 'barangs.id')
             ->join('suppliers', 'transaksi_masuks.supplier_id', '=', 'suppliers.id')
@@ -34,7 +34,7 @@ class LaporanBeliController extends Controller
 
     $totalSum = $data->sum('Total Pengeluaran');
     if (!$request->start_date && !$request->end_date) {
-        $totalSum = TransaksiMasukItem::join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
+        $totalSum = TransaksiKeluarItem::join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
             ->sum('Total Pengeluaran');
     }
 
