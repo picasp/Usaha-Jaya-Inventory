@@ -62,7 +62,6 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarFullyCollapsibleOnDesktop()
             ->topNavigation(false)
             ->plugins([
-                ReportsPlugin::make()
             ])
             ;
     }
