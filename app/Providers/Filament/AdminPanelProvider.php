@@ -5,6 +5,9 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
+use App\Filament\Pages\LaporanBeli;
+use App\Filament\Resources\TransaksiMasukResource\Pages\LaporanBeli as PagesLaporanBeli;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -60,7 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ->topNavigation(false)
             ->plugins([
                 ReportsPlugin::make()
-            ]);
+            ])
             ;
     }
 }

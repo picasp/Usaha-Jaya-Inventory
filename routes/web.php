@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransaksiKeluarController;
+use App\Http\Controllers\LaporanBeliController;
 use App\Models\TransaksiKeluar;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Barryvdh\DomPDF\PDF;
@@ -11,6 +12,7 @@ Route::get('/', function () {
 });
 
 Route::get('pdf/{transaksi}', TransaksiKeluarController::class)->name('pdf'); 
+Route::get('/laporan-jual', [LaporanBeliController::class, 'index'])->name('laporan-jual');
 // Route::get('/transaksi-keluar/{transaksi}', [TransaksiKeluarController::class, 'view'])->name('filament.resources.transaksi-keluars.view');
 
 // Route::get('/transaksi-keluars/{id}/pdf', function($id) {
