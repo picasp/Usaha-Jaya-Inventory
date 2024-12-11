@@ -26,6 +26,13 @@
             <div class="self-end">
                 <button type="button" id="filter-button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Filter</button>
             </div>
+            <div class="flex justify-end mb-4">
+                <a href="{{ route('laporan-beli.export-pdf', ['dateRange' => $dateRange ?? null]) }}" 
+                target="_blank"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    Print
+                </a>
+            </div>
             </form>
 
 <table class="w-full border border-gray-200 bg-white dark:bg-gray-800" id="data-table">

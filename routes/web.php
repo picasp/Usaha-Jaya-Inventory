@@ -17,6 +17,8 @@ Route::get('pdf/{transaksi}', TransaksiKeluarController::class)->name('pdf');
 Route::get('/laporan-beli', [LaporanBeliController::class, 'index'])->name('laporan-beli');
 Route::get('/laporan-jual', [LaporanJualController::class, 'index'])->name('laporan-jual');
 Route::get('/laporan-opname', [LaporanOpnameController::class, 'index'])->name('laporan-opname');
+Route::get('laporan-beli-pdf', [LaporanBeliController::class, 'exportPdf'])->name('laporan-beli.export-pdf'); 
+Route::get('/laporan-jual/cetak', [LaporanJualController::class, 'cetakPdf'])->name('laporan-jual.cetak');
 // Route::get('/transaksi-keluar/{transaksi}', [TransaksiKeluarController::class, 'view'])->name('filament.resources.transaksi-keluars.view');
 
 // Route::get('/transaksi-keluars/{id}/pdf', function($id) {
