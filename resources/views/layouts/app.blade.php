@@ -8,7 +8,8 @@
     <title>@yield('title', 'Nota')</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Calibri;
+            font-size: 8pt;
             margin: 20px;
         }
         .nota {
@@ -30,8 +31,18 @@
             width: 100%;
             border-collapse: collapse;
         }
-        table th,
-        table td {
+        .tabel {
+            padding-top: 1em;
+            padding-bottom: 1em;
+        }
+        .tabel-header {
+            text-align: left;
+        }
+        .tabel th {
+            background-color: #D7D3BF;
+        }
+        .tabel th,
+        .tabel td {
             padding: .625em;
             text-align: center;
         }
