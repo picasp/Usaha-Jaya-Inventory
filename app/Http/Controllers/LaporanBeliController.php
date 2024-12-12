@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TransaksiMasukItem;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanBeliController extends Controller
 {
@@ -49,5 +50,20 @@ class LaporanBeliController extends Controller
                         : null,
         'totalSum' => $totalSum ?? 0,
     ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        // Ambil data untuk laporan, misalnya data transaksi
+        $data = [
+            'data' => TransaksiMasukItem::all(), // Ganti dengan data yang sesuai
+            'dateRange' => $request->dateRange ?? 'Semua Tanggal',
+        ];
+
+        // Load view untuk PDF
+        $pdf = PDF::loadView('laporan-beli-pdf', $data);
+
+        // Return PDF sebagai file download atau tampilkan langsung
+        return $pdf->stream('laporan-beli-pdf');
     }
 }

@@ -26,6 +26,21 @@
             <div class="self-end">
                 <button type="button" id="filter-button" class="px-4 py-2 bg-indigo-600 dark:text-white rounded-md hover:bg-indigo-700">Filter</button>
             </div>
+            <div class="self-end">
+            <form method="GET" action="{{ route('laporan-jual.cetak') }}" target="_blank">
+                <input type="hidden" name="start_date" id="pdf_start_date">
+                <input type="hidden" name="end_date" id="pdf_end_date">
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Cetak PDF</button>
+            </form>
+            <div class="flex justify-end mb-4">
+                <a href="{{ route('laporan-jual.cetak', ['dateRange' => $dateRange ?? null]) }}" 
+                target="_blank"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    Print
+                </a>
+            </div>
+            </div>
+
             </form>
 
 <table class="w-full border border-gray-200 bg-white dark:bg-gray-800" id="data-table">
@@ -74,6 +89,32 @@
             const startDate = document.getElementById('start_date').value;
             const endDate = document.getElementById('end_date').value;
 
+                // Set hidden inputs untuk cetak PDF
+            document.getElementById('pdf_start_date').value = startDate;
+            document.getElementById('pdf_end_date').value = endDate;
+            document.addEventListener('DOMContentLoaded', function() {
+            const filterButton = document.getElementById('filter-button');
+            const pdfButton = document.querySelector('form button[type="submit"]');
+
+            if (filterButton) {
+                filterButton.addEventListener('click', function() {
+                    console.log('Filter button clicked');
+                    // Logic untuk mengatur tanggal
+                });
+            }
+
+            if (pdfButton) {
+                pdfButton.addEventListener('click', function(event) {
+                    console.log('PDF button clicked');
+                    // Jika Anda ingin mencegah pengiriman formulir untuk debugging
+                    // event.preventDefault();
+                });
+            }
+        });
+            document.querySelector('form').addEventListener('submit', function(event) {
+                    console.log('Form submitted');
+                });
+
             fetch(`{{ route('laporan-jual') }}?start_date=${startDate}&end_date=${endDate}`, {
                 method: 'GET',
                 headers: {
@@ -118,6 +159,7 @@
                     `;
                     document.querySelector('#data-table').appendChild(tfoot);
                 }
+                
 
             })
         });
