@@ -22,8 +22,9 @@
                 <button type="button" id="filter-button" class="px-4 py-2">Filter</button>
             </div>
             <div class="flex justify-end mb-4">
-                <a href="{{ route('laporan-beli.export-pdf', ['dateRange' => $dateRange ?? null]) }}" 
+                <a href="#" 
                 target="_blank"
+                id="print-button"
                 class="px-4 py-2">
                     Print
                 </a>
@@ -76,7 +77,7 @@
             // Inisialisasi Date Range Picker
             $('#date_range').daterangepicker({
                 locale: {
-                    format: 'YYYY-MM-DD',
+                    format: 'DD-MM-YYYY',
                     separator: ' - ',
                     applyLabel: 'Terapkan',
                     cancelLabel: 'Batal',
@@ -98,7 +99,8 @@
                     '7  Hari Terakhir': [moment().subtract(6, 'days'), moment()],
                     '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
                     'Bulan ini': [moment().startOf('month'), moment().endOf('month')],
-                    'Bulan Lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    'Bulan Lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Tahun ini': [moment().startOf('year'), moment().endOf('year')],
                 },
                 "alwaysShowCalendars": true,
             });
@@ -106,6 +108,20 @@
             $('#date_range').on('apply.daterangepicker', function(ev, picker) {
                 $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
             });
+
+            // Update tombol Print dengan URL dinamis
+            function updatePrintButton(startDate, endDate) {
+                const printButton = document.getElementById('print-button');
+                const baseUrl = `{{ route('laporan-beli.export-pdf') }}`;
+                const params = new URLSearchParams();
+
+                if (startDate && endDate) {
+                    params.append('start_date', startDate);
+                    params.append('end_date', endDate);
+                }
+
+                printButton.href = `${baseUrl}?${params.toString()}`;
+            }
 
             // Filter Data Saat Tombol Diklik
             $('#filter-button').on('click', function() {
@@ -152,6 +168,9 @@
                     if (footerTotalCell) {
                         footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString();
                     }
+
+                    // Perbarui tombol print
+                    updatePrintButton(startDate, endDate);
                 });
             });
         });
