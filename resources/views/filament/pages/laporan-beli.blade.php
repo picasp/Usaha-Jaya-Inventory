@@ -1,7 +1,9 @@
 <x-filament-panels::page>
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
     <div class="p-4">
         <div class="text-center mb-4">
@@ -12,24 +14,17 @@
         <div class="overflow-x-auto">
             <form id="filter-form" class="mb-4 flex justify-center gap-4">
             <div>
-                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Mulai</label>
-                <input type="text" name="start_date" id="start_date"
+                <input type="text" name="date_range" id="date_range"
                     class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-800"
-                    placeholder="Pilih Tanggal Mulai" readonly>
-            </div>
-            <div>
-                <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Akhir</label>
-                <input type="text" name="end_date" id="end_date"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-800"
-                    placeholder="Pilih Tanggal Akhir" readonly>
+                    placeholder="Pilih Rentang Tanggal" readonly>
             </div>
             <div class="self-end">
-                <button type="button" id="filter-button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Filter</button>
+                <button type="button" id="filter-button" class="px-4 py-2">Filter</button>
             </div>
             <div class="flex justify-end mb-4">
                 <a href="{{ route('laporan-beli.export-pdf', ['dateRange' => $dateRange ?? null]) }}" 
                 target="_blank"
-                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                class="px-4 py-2">
                     Print
                 </a>
             </div>
@@ -47,7 +42,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach($data as $item)
+        @forelse($data as $item)
         <tr class="border dark:border-gray-700">
             <td class="px-4 py-2 border dark:border-gray-700">{{ \Carbon\Carbon::parse($item['Tanggal'])->format('d/m/Y') }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Nama Barang'] }}</td>
@@ -56,7 +51,11 @@
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Satuan'] }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Total Pengeluaran']) }}</td>
         </tr>
-        @endforeach
+        @empty
+        <tr class="border dark:border-gray-700">
+            <td colspan="6" class="px-4 py-2 border dark:border-gray-700">Tidak ada data</td>
+        </tr>
+        @endforelse
     </tbody>
     <tfoot>
     <tr class="border dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
@@ -73,72 +72,87 @@
 
     @push('scripts')
     <script>
-        document.getElementById('filter-button').addEventListener('click', function() {
-            const startDate = document.getElementById('start_date').value;
-            const endDate = document.getElementById('end_date').value;
-
-            fetch(`{{ route('laporan-beli') }}?start_date=${startDate}&end_date=${endDate}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('#data-table tbody');
-                tableBody.innerHTML = ''; // Clear existing rows
-
-                data.data.forEach(item => {
-                    const row = `
-                        <tr class="border dark:border-gray-700">
-                            <td class="px-4 py-2 border dark:border-gray-700">${new Date(item.Tanggal).toLocaleDateString()}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Barang']}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Supplier}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Stok}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Satuan}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item['Total Pengeluaran']).toLocaleString()}</td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-                });
-
-                document.getElementById('date-range').innerText = startDate && endDate ? `${startDate} - ${endDate}` : 'Semua Tanggal';
-
-                const footerTotalCell = document.querySelector('#data-table tfoot td:last-child');
-                if (footerTotalCell) {
-                    footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString();
-                } else {
-                    const tfoot = document.createElement('tfoot');
-                    tfoot.innerHTML = `
-                        <tr class="border dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-                            <td colspan="5" class="px-4 py-2 border dark:border-gray-700 text-right font-bold">Total:</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">
-                                Rp. ${parseFloat(data.totalSum || 0).toLocaleString()}
-                            </td>
-                        </tr>
-                    `;
-                    document.querySelector('#data-table').appendChild(tfoot);
-                }
-
-            })
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            flatpickr("#start_date", {
-                dateFormat: "Y-m-d",
-                allowInput: true,
-                onClose: function(selectedDates, dateStr, instance) {
-                    // Optional: You can add custom behavior on date selection
-                }
+        $(document).ready(function() {
+            // Inisialisasi Date Range Picker
+            $('#date_range').daterangepicker({
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    separator: ' - ',
+                    applyLabel: 'Terapkan',
+                    cancelLabel: 'Batal',
+                    fromLabel: 'Dari',
+                    toLabel: 'Hingga',
+                    customRangeLabel: 'Sesuaikan',
+                    daysOfWeek: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    monthNames: [
+                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    ],
+                    firstDay: 1
+                },
+                opens: 'center',
+                autoUpdateInput: false,
+                ranges: {
+                    'Hari ini': [moment(), moment()],
+                    'Kemarin': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7  Hari Terakhir': [moment().subtract(6, 'days'), moment()],
+                    '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
+                    'Bulan ini': [moment().startOf('month'), moment().endOf('month')],
+                    'Bulan Lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "alwaysShowCalendars": true,
             });
 
-            flatpickr("#end_date", {
-                dateFormat: "Y-m-d",
-                allowInput: true,
-                onClose: function(selectedDates, dateStr, instance) {
-                    // Optional: You can add custom behavior on date selection
-                }
+            $('#date_range').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            });
+
+            // Filter Data Saat Tombol Diklik
+            $('#filter-button').on('click', function() {
+                const dateRange = $('#date_range').val();
+                const [startDate, endDate] = dateRange.split(' - ');
+
+                fetch(`{{ route('laporan-beli') }}?start_date=${startDate}&end_date=${endDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#data-table tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    if (data.data.length === 0) {
+                        const emptyRow = `
+                            <tr class="border dark:border-gray-700">
+                                <td colspan="6" class="px-4 py-2 border dark:border-gray-700 text-center">Tidak ada data</td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', emptyRow);
+                    } else {
+                        data.data.forEach(item => {
+                            const row = `
+                                <tr class="border dark:border-gray-700">
+                                    <td class="px-4 py-2 border dark:border-gray-700">${new Date(item.Tanggal).toLocaleDateString()}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Barang']}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item.Supplier}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item.Stok}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item.Satuan}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item['Total Pengeluaran']).toLocaleString()}</td>
+                                </tr>
+                            `;
+                            tableBody.insertAdjacentHTML('beforeend', row);
+                        });
+                    }
+
+                    document.getElementById('date-range').innerText = dateRange || 'Semua Tanggal';
+
+                    const footerTotalCell = document.querySelector('#data-table tfoot td:last-child');
+                    if (footerTotalCell) {
+                        footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString();
+                    }
+                });
             });
         });
     </script>
