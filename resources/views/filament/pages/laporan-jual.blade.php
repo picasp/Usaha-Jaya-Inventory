@@ -24,7 +24,7 @@
                     placeholder="Pilih Tanggal Akhir" readonly>
             </div>
             <div class="self-end">
-                <button type="button" id="filter-button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Filter</button>
+                <button type="button" id="filter-button" class="px-4 py-2 bg-indigo-600 dark:text-white rounded-md hover:bg-indigo-700">Filter</button>
             </div>
             <div class="self-end">
             <form method="GET" action="{{ route('laporan-jual.cetak') }}" target="_blank">
