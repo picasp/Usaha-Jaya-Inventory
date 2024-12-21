@@ -23,15 +23,7 @@ class LaporanJualController extends Controller
             'transaksi_keluar_items.harga as Harga',
             DB::raw('SUM(transaksi_keluar_items.total) as `Total Pendapatan`')
         )
-        ->groupBy(
-            'transaksi_keluars.tgl_penjualan',
-            'transaksi_keluars.nama_pembeli',
-            'transaksi_keluars.jenis_pembayaran',
-            'barangs.nama_barang',
-            'barangs.satuan',
-            'transaksi_keluar_items.qty',
-            'transaksi_keluar_items.harga'
-        );
+        ->orderBy('transaksi_keluars.tgl_penjualan', 'desc');
 
     if ($request->start_date && $request->end_date) {
         $query->whereBetween('transaksi_keluars.tgl_penjualan', [
@@ -40,12 +32,21 @@ class LaporanJualController extends Controller
         ]);
     }
 
+    $query->groupBy(
+        'transaksi_keluars.tgl_penjualan',
+        'transaksi_keluars.nama_pembeli',
+        'transaksi_keluars.jenis_pembayaran',
+        'barangs.nama_barang',
+        'barangs.satuan',
+        'transaksi_keluar_items.qty',
+        'transaksi_keluar_items.harga'
+    );
     $data = $query->get();
 
     $totalSum = $data->sum('Total Pendapatan');
     if (!$request->start_date && !$request->end_date) {
         $totalSum = TransaksiKeluarItem::join('transaksi_keluars', 'transaksi_keluar_items.transaksi_keluar_id', '=', 'transaksi_keluars.id')
-            ->sum('Total Pendapatan');
+            ->sum('transaksi_keluar_items.total');
     }
 
     if ($request->ajax()) {
@@ -54,41 +55,60 @@ class LaporanJualController extends Controller
 
     return view('filament.pages.laporan-jual', [
         'data' => $data,
+        'totalSum' => $totalSum,
         'dateRange' => $request->start_date && $request->end_date 
                         ? "{$request->start_date} - {$request->end_date}" 
                         : null,
-        'totalSum' => $totalSum ?? 0,
     ]);
     }
 
-    public function cetak(Request $request)
-{
-    $query = TransaksiKeluarItem::query()
+    public function exportPdf(Request $request)
+    {
+        $query = TransaksiKeluarItem::query()
         ->join('barangs', 'transaksi_keluar_items.barang_id', '=', 'barangs.id')
         ->join('transaksi_keluars', 'transaksi_keluar_items.transaksi_keluar_id', '=', 'transaksi_keluars.id')
         ->select(
             'transaksi_keluars.tgl_penjualan as Tanggal',
-            'transaksi_keluars.nama_pembeli as Nama_Pembeli',
+            'transaksi_keluars.nama_pembeli as Nama Pembeli',
             'transaksi_keluars.jenis_pembayaran as Transaksi',
-            'barangs.nama_barang as Nama_Barang',
+            'barangs.nama_barang as Nama Barang',
             'barangs.satuan as Satuan',
             'transaksi_keluar_items.qty as Stok',
             'transaksi_keluar_items.harga as Harga',
-            DB::raw('SUM(transaksi_keluar_items.total) as `Total_Pendapatan`')
-        );
-
-    if ($request->start_date && $request->end_date) {
-        $query->whereBetween('transaksi_keluars.tgl_penjualan', [
-            $request->start_date,
-            $request->end_date,
-        ]);
+            DB::raw('SUM(transaksi_keluar_items.total) as `Total Pendapatan`')
+        )
+        ->orderBy('transaksi_keluars.tgl_penjualan', 'desc');
+    
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('transaksi_keluars.tgl_penjualan', [
+                $request->start_date,
+                $request->end_date
+            ]);
+        }
+    
+        $query->groupBy(
+            'transaksi_keluars.tgl_penjualan',
+            'transaksi_keluars.nama_pembeli',
+            'transaksi_keluars.jenis_pembayaran',
+            'barangs.nama_barang',
+            'barangs.satuan',
+            'transaksi_keluar_items.qty',
+            'transaksi_keluar_items.harga'
+        );        
+        $data = $query->get();
+        $totalSum = $data->sum('Total Pendapatan');
+        $pdfData = [
+            'data' => $data,
+            'dateRange' => $request->start_date && $request->end_date 
+                            ? "{$request->start_date} - {$request->end_date}" 
+                            : 'Semua Tanggal',
+            'totalSum' => $totalSum,
+        ];
+    
+        // Load view untuk PDF
+        $pdf = PDF::loadView('laporan-jual-pdf', $pdfData);
+    
+        // Return PDF sebagai file download atau tampilkan langsung
+        return $pdf->stream('laporan-jual.pdf');
     }
-
-    $query->groupBy('barangs.nama_barang', 'barangs.satuan', 'transaksi_keluars.tgl_penjualan', 'transaksi_keluar_items.qty', 'transaksi_keluars.nama_pembeli', 'transaksi_keluars.jenis_pembayaran', 'transaksi_keluar_items.harga');
-    $data = $query->get();
-
-    // Generate PDF
-    $pdf = PDF::loadView('laporan-jual-pdf', compact('data'));
-    return $pdf->stream('laporan-penjualan.pdf');
-}
 }

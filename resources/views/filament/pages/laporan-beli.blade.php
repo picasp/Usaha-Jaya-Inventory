@@ -15,19 +15,24 @@
             <form id="filter-form" class="mb-4 flex justify-center gap-4">
             <div>
                 <input type="text" name="date_range" id="date_range"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-800"
+                    class="block w-full rounded-md border-gray-300 dark:bg-gray-800"
                     placeholder="Pilih Rentang Tanggal" readonly>
             </div>
             <div class="self-end">
-                <button type="button" id="filter-button" class="px-4 py-2">Filter</button>
+                <x-filament::button id="filter-button" icon="heroicon-m-bars-arrow-down">
+                    Filter
+                </x-filament::button>
             </div>
             <div class="flex justify-end mb-4">
-                <a href="#" 
+                <x-filament::button 
+                href="#"
+                tag="a"
                 target="_blank"
                 id="print-button"
-                class="px-4 py-2">
+                color="info"
+                icon="heroicon-m-printer">
                     Print
-                </a>
+                </x-filament::button>
             </div>
             </form>
 
@@ -150,12 +155,12 @@
                         data.data.forEach(item => {
                             const row = `
                                 <tr class="border dark:border-gray-700">
-                                    <td class="px-4 py-2 border dark:border-gray-700">${new Date(item.Tanggal).toLocaleDateString()}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${new Date(item.Tanggal).toLocaleDateString('id-ID')}</td>
                                     <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Barang']}</td>
                                     <td class="px-4 py-2 border dark:border-gray-700">${item.Supplier}</td>
                                     <td class="px-4 py-2 border dark:border-gray-700">${item.Stok}</td>
                                     <td class="px-4 py-2 border dark:border-gray-700">${item.Satuan}</td>
-                                    <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item['Total Pengeluaran']).toLocaleString()}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item['Total Pengeluaran']).toLocaleString('id-ID')}</td>
                                 </tr>
                             `;
                             tableBody.insertAdjacentHTML('beforeend', row);
@@ -166,7 +171,7 @@
 
                     const footerTotalCell = document.querySelector('#data-table tfoot td:last-child');
                     if (footerTotalCell) {
-                        footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString();
+                        footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString('id-ID');
                     }
 
                     // Perbarui tombol print

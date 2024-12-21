@@ -15,10 +15,12 @@ class LaporanBeli extends Page
 
     protected static string $view = 'filament.pages.laporan-beli';
     public $data;
+    public $totalSum;
 
     public function mount()
     {
         $this->data = $this->purchaseSummary();
+        $this->totalSum = $this->calculateTotalSum();
     }
 
     public function purchaseSummary()
@@ -35,8 +37,14 @@ class LaporanBeli extends Page
             'transaksi_masuk_items.qty as Stok',
             DB::raw('SUM(transaksi_masuk_items.total) as `Total Pengeluaran`')
         )
+            ->orderBy('transaksi_masuks.tgl_pembelian', 'desc')
             ->groupBy('barangs.nama_barang', 'barangs.satuan', 'transaksi_masuks.tgl_pembelian', 'suppliers.nama_supplier', 'transaksi_masuk_items.qty')
             ->get()
             ->toArray();
+    }
+    public function calculateTotalSum()
+    {
+        return TransaksiMasukItem::join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
+            ->sum('transaksi_masuk_items.total');
     }
 }

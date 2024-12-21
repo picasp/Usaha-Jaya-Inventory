@@ -1,7 +1,9 @@
 <x-filament-panels::page>
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
     <div class="p-4">
         <div class="text-center mb-4">
@@ -12,63 +14,58 @@
         <div class="overflow-x-auto">
             <form id="filter-form" class="mb-4 flex justify-center gap-4">
             <div>
-                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Mulai</label>
-                <input type="text" name="start_date" id="start_date"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-800"
-                    placeholder="Pilih Tanggal Mulai" readonly>
-            </div>
-            <div>
-                <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Akhir</label>
-                <input type="text" name="end_date" id="end_date"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-800"
-                    placeholder="Pilih Tanggal Akhir" readonly>
+                <input type="text" name="date_range" id="date_range"
+                    class="block w-full rounded-md border-gray-300 dark:bg-gray-800"
+                    placeholder="Pilih Rentang Tanggal" readonly>
             </div>
             <div class="self-end">
-                <button type="button" id="filter-button" class="px-4 py-2 bg-indigo-600 dark:text-white rounded-md hover:bg-indigo-700">Filter</button>
+                <x-filament::button id="filter-button" icon="heroicon-m-bars-arrow-down">
+                    Filter
+                </x-filament::button>
             </div>
-            <div class="self-end">
-            <form method="GET" action="{{ route('laporan-jual.cetak') }}" target="_blank">
-                <input type="hidden" name="start_date" id="pdf_start_date">
-                <input type="hidden" name="end_date" id="pdf_end_date">
-                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Cetak PDF</button>
-            </form>
             <div class="flex justify-end mb-4">
-                <a href="{{ route('laporan-jual.cetak', ['dateRange' => $dateRange ?? null]) }}" 
+                <x-filament::button 
+                href="#"
+                tag="a"
                 target="_blank"
-                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                id="print-button"
+                color="info"
+                icon="heroicon-m-printer">
                     Print
-                </a>
+                </x-filament::button>
             </div>
-            </div>
-
             </form>
 
 <table class="w-full border border-gray-200 bg-white dark:bg-gray-800" id="data-table">
     <thead>
         <tr class="bg-gray-100 dark:bg-gray-700 text-gray-800">
-            <th class="px-4 py-2 border">Tanggal</th>
-            <th class="px-4 py-2 border">Nama Pelanggan</th>
-            <th class="px-4 py-2 border">Nama Barang</th>
-            <th class="px-4 py-2 border">Jumlah</th>
-            <th class="px-4 py-2 border">Satuan</th>
-            <th class="px-4 py-2 border">Jenis Pembayaran</th>
-            <th class="px-4 py-2 border">Harga</th>
-            <th class="px-4 py-2 border">Total Penjualan</th>
+            <th  class="px-4 py-2 border">Tanggal</th>
+            <th  class="px-4 py-2 border">Nama Pembeli</th>
+            <th  class="px-4 py-2 border">Nama Barang</th>
+            <th  class="px-4 py-2 border">Satuan</th>
+            <th  class="px-4 py-2 border">Jenis Pembayaran</th>
+            <th  class="px-4 py-2 border">Harga</th>
+            <th  class="px-4 py-2 border">Jumlah</th>
+            <th  class="px-4 py-2 border">Total Pendapatan</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($data as $item)
+        @forelse($data as $item)
         <tr class="border dark:border-gray-700">
             <td class="px-4 py-2 border dark:border-gray-700">{{ \Carbon\Carbon::parse($item['Tanggal'])->format('d/m/Y') }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Nama Pembeli'] }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Nama Barang'] }}</td>
-            <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Stok'] }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Satuan'] }}</td>
             <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Transaksi'] }}</td>
-            <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Harga'] }}</td>
-            <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Total Pendapatan']) }}</td>
+            <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Harga'], 0, ',', '.') }}</td>
+            <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Stok'] }}</td>
+            <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Total Pendapatan'], 0, ',', '.') }}</td>
         </tr>
-        @endforeach
+        @empty
+        <tr class="border dark:border-gray-700">
+            <td colspan="7" class="px-4 py-2 border dark:border-gray-700">Tidak ada data</td>
+        </tr>
+        @endforelse
     </tbody>
     <tfoot>
     <tr class="border dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
@@ -85,101 +82,107 @@
 
     @push('scripts')
     <script>
-        document.getElementById('filter-button').addEventListener('click', function() {
-            const startDate = document.getElementById('start_date').value;
-            const endDate = document.getElementById('end_date').value;
-
-                // Set hidden inputs untuk cetak PDF
-            document.getElementById('pdf_start_date').value = startDate;
-            document.getElementById('pdf_end_date').value = endDate;
-            document.addEventListener('DOMContentLoaded', function() {
-            const filterButton = document.getElementById('filter-button');
-            const pdfButton = document.querySelector('form button[type="submit"]');
-
-            if (filterButton) {
-                filterButton.addEventListener('click', function() {
-                    console.log('Filter button clicked');
-                    // Logic untuk mengatur tanggal
-                });
-            }
-
-            if (pdfButton) {
-                pdfButton.addEventListener('click', function(event) {
-                    console.log('PDF button clicked');
-                    // Jika Anda ingin mencegah pengiriman formulir untuk debugging
-                    // event.preventDefault();
-                });
-            }
-        });
-            document.querySelector('form').addEventListener('submit', function(event) {
-                    console.log('Form submitted');
-                });
-
-            fetch(`{{ route('laporan-jual') }}?start_date=${startDate}&end_date=${endDate}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('#data-table tbody');
-                tableBody.innerHTML = ''; // Clear existing rows
-
-                data.data.forEach(item => {
-                    const row = `
-                        <tr class="border dark:border-gray-700">
-                            <td class="px-4 py-2 border dark:border-gray-700">${new Date(item.Tanggal).toLocaleDateString()}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Pembeli']}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Barang']}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Stok}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Satuan}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Transaksi}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">${item.Harga}</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item['Total Pendapatan']).toLocaleString()}</td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-                });
-
-                document.getElementById('date-range').innerText = startDate && endDate ? `${startDate} - ${endDate}` : 'Semua Tanggal';
-
-                const footerTotalCell = document.querySelector('#data-table tfoot td:last-child');
-                if (footerTotalCell) {
-                    footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString();
-                } else {
-                    const tfoot = document.createElement('tfoot');
-                    tfoot.innerHTML = `
-                        <tr class="border dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-                            <td colspan="5" class="px-4 py-2 border dark:border-gray-700 text-right font-bold">Total:</td>
-                            <td class="px-4 py-2 border dark:border-gray-700">
-                                Rp. ${parseFloat(data.totalSum || 0).toLocaleString()}
-                            </td>
-                        </tr>
-                    `;
-                    document.querySelector('#data-table').appendChild(tfoot);
-                }
-                
-
-            })
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            flatpickr("#start_date", {
-                dateFormat: "Y-m-d",
-                allowInput: true,
-                onClose: function(selectedDates, dateStr, instance) {
-                    // Optional: You can add custom behavior on date selection
-                }
+        $(document).ready(function() {
+            // Inisialisasi Date Range Picker
+            $('#date_range').daterangepicker({
+                locale: {
+                    format: 'DD-MM-YYYY',
+                    separator: ' - ',
+                    applyLabel: 'Terapkan',
+                    cancelLabel: 'Batal',
+                    fromLabel: 'Dari',
+                    toLabel: 'Hingga',
+                    customRangeLabel: 'Sesuaikan',
+                    daysOfWeek: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    monthNames: [
+                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    ],
+                    firstDay: 1
+                },
+                opens: 'center',
+                autoUpdateInput: false,
+                ranges: {
+                    'Hari ini': [moment(), moment()],
+                    'Kemarin': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7  Hari Terakhir': [moment().subtract(6, 'days'), moment()],
+                    '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
+                    'Bulan ini': [moment().startOf('month'), moment().endOf('month')],
+                    'Bulan Lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Tahun ini': [moment().startOf('year'), moment().endOf('year')],
+                },
+                "alwaysShowCalendars": true,
             });
 
-            flatpickr("#end_date", {
-                dateFormat: "Y-m-d",
-                allowInput: true,
-                onClose: function(selectedDates, dateStr, instance) {
-                    // Optional: You can add custom behavior on date selection
+            $('#date_range').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            });
+
+            // Update tombol Print dengan URL dinamis
+            function updatePrintButton(startDate, endDate) {
+                const printButton = document.getElementById('print-button');
+                const baseUrl = `{{ route('laporan-jual.export-pdf') }}`;
+                const params = new URLSearchParams();
+
+                if (startDate && endDate) {
+                    params.append('start_date', startDate);
+                    params.append('end_date', endDate);
                 }
+
+                printButton.href = `${baseUrl}?${params.toString()}`;
+            }
+
+            // Filter Data Saat Tombol Diklik
+            $('#filter-button').on('click', function() {
+                const dateRange = $('#date_range').val();
+                const [startDate, endDate] = dateRange.split(' - ');
+
+                fetch(`{{ route('laporan-jual') }}?start_date=${startDate}&end_date=${endDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#data-table tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    if (data.data.length === 0) {
+                        const emptyRow = `
+                            <tr class="border dark:border-gray-700">
+                                <td colspan="8" class="px-4 py-2 border dark:border-gray-700 text-center">Tidak ada data</td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', emptyRow);
+                    } else {
+                        data.data.forEach(item => {
+                            const row = `
+                                <tr class="border dark:border-gray-700">
+                                    <td class="px-4 py-2 border dark:border-gray-700">${new Date(item.Tanggal).toLocaleDateString('id-ID')}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Pembeli']}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item['Nama Barang']}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item.Satuan}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item.Transaksi}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item.Harga).toLocaleString('id-ID')}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">${item.Stok}</td>
+                                    <td class="px-4 py-2 border dark:border-gray-700">Rp. ${parseFloat(item['Total Pendapatan']).toLocaleString('id-ID')}</td>
+                                </tr>
+                            `;
+                            tableBody.insertAdjacentHTML('beforeend', row);
+                        });
+                    }
+
+                    document.getElementById('date-range').innerText = dateRange || 'Semua Tanggal';
+
+                    const footerTotalCell = document.querySelector('#data-table tfoot td:last-child');
+                    if (footerTotalCell) {
+                        footerTotalCell.innerText = 'Rp. ' + parseFloat(data.totalSum || 0).toLocaleString('id-ID');
+                    }
+
+                    // Perbarui tombol print
+                    updatePrintButton(startDate, endDate);
+                });
             });
         });
     </script>

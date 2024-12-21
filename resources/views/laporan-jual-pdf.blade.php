@@ -50,34 +50,38 @@
         <p>Telepon: +62 858-0274-7974</p>
     </div>
 
-    <h1>Laporan Pembelian</h1>
+    <h1>Laporan Penjualan</h1>
     <p>Rentang Tanggal: {{ $dateRange }}</p>
     <table>
         <thead>
             <tr>
-                <th class="px-4 py-2 border">Tanggal</th>
-                <th class="px-4 py-2 border">Nama Barang</th>
-                <th class="px-4 py-2 border">Pemasok</th>
-                <th class="px-4 py-2 border">Stok Diterima</th>
-                <th class="px-4 py-2 border">Satuan</th>
-                <th class="px-4 py-2 border">Total Pembelian</th>
+                <th  class="px-4 py-2 border">Tanggal</th>
+                <th  class="px-4 py-2 border">Nama Pembeli</th>
+                <th  class="px-4 py-2 border">Nama Barang</th>
+                <th  class="px-4 py-2 border">Satuan</th>
+                <th  class="px-4 py-2 border">Jenis Pembayaran</th>
+                <th  class="px-4 py-2 border">Harga</th>
+                <th  class="px-4 py-2 border">Jumlah</th>
+                <th  class="px-4 py-2 border">Total Pendapatan</th>
             </tr>
         </thead>
         <tbody>
             @foreach($data as $item)
             <tr>
                 <td class="px-4 py-2 border dark:border-gray-700">{{ \Carbon\Carbon::parse($item['Tanggal'])->format('d/m/Y') }}</td>
+                <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Nama Pembeli'] }}</td>
                 <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Nama Barang'] }}</td>
-                <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Supplier'] }}</td>
-                <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Stok'] }}</td>
                 <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Satuan'] }}</td>
-                <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Total Pengeluaran'], 0, ',', '.') }}</td>
+                <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Transaksi'] }}</td>
+                <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Harga'], 0, ',', '.') }}</td>
+                <td class="px-4 py-2 border dark:border-gray-700">{{ $item['Stok'] }}</td>
+                <td class="px-4 py-2 border dark:border-gray-700">Rp. {{ number_format($item['Total Pendapatan'], 0, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr class="border dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-                <td colspan="5" class="px-4 py-2 border dark:border-gray-700 text-right font-bold" id="total">Total:</td>
+                <td colspan="7" class="px-4 py-2 border dark:border-gray-700 text-right font-bold" id="total">Total:</td>
                 <td class="px-4 py-2 border dark:border-gray-700">
                     Rp. {{ number_format($totalSum ?? 0, 0, ',', '.') }}
                 </td>

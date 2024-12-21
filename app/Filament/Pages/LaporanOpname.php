@@ -34,6 +34,7 @@ class LaporanOpname extends Page
             'opname_items.selisih as Selisih',
             'opname_items.keterangan as Keterangan'
         )
+            ->orderBy('opnames.tgl', 'desc')
             ->groupBy('barangs.nama_barang', 'opnames.tgl', 'opname_items.qty_sistem', 'opname_items.qty_fisik', 'opname_items.selisih', 'opname_items.keterangan')
             ->get()
             ->toArray();

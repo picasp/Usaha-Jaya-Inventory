@@ -21,7 +21,8 @@ class LaporanBeliController extends Controller
                 'barangs.satuan as Satuan',
                 'transaksi_masuk_items.qty as Stok',
                 DB::raw('SUM(transaksi_masuk_items.total) as `Total Pengeluaran`')
-            );
+            )
+            ->orderBy('transaksi_masuks.tgl_pembelian', 'desc');
 
     if ($request->start_date && $request->end_date) {
         $query->whereBetween('transaksi_masuks.tgl_pembelian', [
@@ -36,7 +37,7 @@ class LaporanBeliController extends Controller
     $totalSum = $data->sum('Total Pengeluaran');
     if (!$request->start_date && !$request->end_date) {
         $totalSum = TransaksiMasukItem::join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
-            ->sum('Total Pengeluaran');
+            ->sum('transaksi_masuk_items.total');
     }
 
     if ($request->ajax()) {
@@ -45,10 +46,8 @@ class LaporanBeliController extends Controller
 
     return view('filament.pages.laporan-beli', [
         'data' => $data,
-        'dateRange' => $request->start_date && $request->end_date 
-                        ? "{$request->start_date} - {$request->end_date}" 
-                        : null,
-        'totalSum' => $totalSum ?? 0,
+        'dateRange' => $request->start_date && $request->end_date ? "{$request->start_date} - {$request->end_date}" : null,
+        'totalSum' => $totalSum,
     ]);
     }
 
@@ -65,7 +64,8 @@ class LaporanBeliController extends Controller
                 'barangs.satuan as Satuan',
                 'transaksi_masuk_items.qty as Stok',
                 DB::raw('SUM(transaksi_masuk_items.total) as `Total Pengeluaran`')
-            );
+            )
+            ->orderBy('transaksi_masuks.tgl_pembelian', 'desc');
     
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('transaksi_masuks.tgl_pembelian', [
