@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 9pt;
+            font-size: 8pt;
         }
         .kop-surat {
             text-align: center;
@@ -28,7 +28,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9pt;
+            font-size: 7pt;
         }
         th, td {
             border: 1px solid #ddd;

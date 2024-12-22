@@ -24,31 +24,61 @@ class LaporanBeliController extends Controller
             )
             ->orderBy('transaksi_masuks.tgl_pembelian', 'desc');
 
-    if ($request->start_date && $request->end_date) {
-        $query->whereBetween('transaksi_masuks.tgl_pembelian', [
-            $request->start_date,
-            $request->end_date
+        // Filter berdasarkan rentang tanggal
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('transaksi_masuks.tgl_pembelian', [
+                $request->start_date,
+                $request->end_date
+            ]);
+        }
+
+        // Kelompokkan data
+        $query->groupBy(
+            'transaksi_masuks.tgl_pembelian', 
+            'barangs.nama_barang', 
+            'suppliers.nama_supplier', 
+            'barangs.satuan', 
+            'transaksi_masuk_items.qty'
+        );
+
+        // Ambil data terpaginasi
+        $paginatedData = $query->paginate(10);
+
+        // Simpan hanya data dan informasi pagination yang diperlukan
+        $data = $paginatedData->items(); // Hanya ambil item dari paginator
+        $pagination = [
+            'from' => $paginatedData->firstItem(),
+            'to' => $paginatedData->lastItem(),
+            'current_page' => $paginatedData->currentPage(),
+            'last_page' => $paginatedData->lastPage(),
+            'per_page' => $paginatedData->perPage(),
+            'total' => $paginatedData->total(),
+            'links' => $paginatedData->links('pagination::tailwind')->render(),
+        ];
+
+        // Hitung total sum
+        $totalSum = collect($data)->sum('Total Pengeluaran');
+        if (!$request->start_date && !$request->end_date) {
+            $totalSum = TransaksiMasukItem::join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
+                ->sum('transaksi_masuk_items.total');
+        }
+
+        // Respon Ajax
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data,
+                'pagination' => $pagination,
+                'totalSum' => $totalSum
+            ]);
+        }
+
+        // Respon ke View
+        return view('filament.pages.laporan-beli', [
+            'data' => $data,
+            'pagination' => $pagination,
+            'dateRange' => $request->start_date && $request->end_date ? "{$request->start_date} - {$request->end_date}" : null,
+            'totalSum' => $totalSum,
         ]);
-    }
-
-    $query->groupBy('transaksi_masuks.tgl_pembelian', 'barangs.nama_barang', 'suppliers.nama_supplier', 'barangs.satuan', 'transaksi_masuk_items.qty');
-    $data = $query->get();
-
-    $totalSum = $data->sum('Total Pengeluaran');
-    if (!$request->start_date && !$request->end_date) {
-        $totalSum = TransaksiMasukItem::join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')
-            ->sum('transaksi_masuk_items.total');
-    }
-
-    if ($request->ajax()) {
-        return response()->json(['data' => $data, 'totalSum' => $totalSum]);
-    }
-
-    return view('filament.pages.laporan-beli', [
-        'data' => $data,
-        'dateRange' => $request->start_date && $request->end_date ? "{$request->start_date} - {$request->end_date}" : null,
-        'totalSum' => $totalSum,
-    ]);
     }
 
     public function exportPdf(Request $request)
