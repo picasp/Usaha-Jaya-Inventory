@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTransaksiMasuk extends CreateRecord
 {
     protected static string $resource = TransaksiMasukResource::class;
+    protected static ?string $title = 'Pembelian Baru';
 }

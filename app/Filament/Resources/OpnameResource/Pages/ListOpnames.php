@@ -9,7 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListOpnames extends ListRecords
 {
     protected static string $resource = OpnameResource::class;
-    protected static ?string $title = 'Stok Opname';
+    protected static ?string $title = 'Daftar Stok Opname';
 
     protected function getHeaderActions(): array
     {

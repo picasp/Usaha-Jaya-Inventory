@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class CreateTransaksiKeluar extends CreateRecord
 {
     protected static string $resource = TransaksiKeluarResource::class;
+    protected static ?string $title = 'Penjualan Baru';
     
     // protected function mutateFormDataBeforeCreate(array $data): array
     // {

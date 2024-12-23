@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditOpname extends EditRecord
 {
     protected static string $resource = OpnameResource::class;
+    protected static ?string $title = 'Edit Stok Opname';
 
     protected function getHeaderActions(): array
     {

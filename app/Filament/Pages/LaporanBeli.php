@@ -49,7 +49,7 @@ class LaporanBeli extends Page implements HasTable
                 ->dateTime('d/m/Y'),
                 TextColumn::make('barang.nama_barang')->sortable()->label('Nama Barang'),
                 TextColumn::make('Supplier')
-                    ->label('Supplier')
+                    ->label('Pemasok')
                     ->sortable()
                     ->getStateUsing(fn ($record) => $record->Supplier),
                 TextColumn::make('qty')->sortable()->label('Stok'),

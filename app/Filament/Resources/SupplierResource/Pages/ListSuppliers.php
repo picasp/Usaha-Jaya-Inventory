@@ -9,7 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListSuppliers extends ListRecords
 {
     protected static string $resource = SupplierResource::class;
-    protected static ?string $title = 'Daftar Supplier';
+    protected static ?string $title = 'Daftar Pemasok';
 
     protected function getHeaderActions(): array
     {

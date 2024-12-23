@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditBarang extends EditRecord
 {
     protected static string $resource = BarangResource::class;
+    protected static ?string $title = 'Edit Barang';
 
     protected function getHeaderActions(): array
     {

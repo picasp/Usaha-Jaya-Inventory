@@ -130,7 +130,7 @@ class TransaksiMasukResource extends Resource
                 ->Schema([
                     Select::make('supplier_id')
                     ->relationship('supplier', 'nama_supplier')
-                    ->label('Supplier')
+                    ->label('Pemasok')
                     ->reactive()
                     ->searchable()
                     ->required()
@@ -181,9 +181,11 @@ class TransaksiMasukResource extends Resource
                 }),
                 Tables\Columns\TextColumn::make('supplier.nama_supplier')
                 ->label('Supplier')
+                ->searchable()
                 ->sortable(),
                 Tables\Columns\TextColumn::make('keterangan')
                 ->markdown()
+                ->searchable()
                 ->sortable(),
             ])
             ->defaultSort('tgl_pembelian', 'desc')
