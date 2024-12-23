@@ -14,6 +14,7 @@
         <table class="tabel-header" style='font-size:8pt; font-family:calibri; border-collapse: collapse;'>
             <td width='65%' style='padding-right:80px; vertical-align:top'>
                 <span style='font-size:12pt'><b>UD. USAHA JAYA</b></span></br>
+                <b>MENJUAL BERBAGAI ALAT DAN KEBUTUHAN BAHAN BANGUNAN</b></br>
                 Jl. Swadaya 2 No.100b, Dero, Condongcatur, Kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakarta </br>
                 Telp : +62 858-0274-7974
             </td>

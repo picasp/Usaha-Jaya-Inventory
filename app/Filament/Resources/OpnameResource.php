@@ -114,6 +114,9 @@ class OpnameResource extends Resource
                 ->label('Tanggal')
                 ->sortable()
                 ->dateTime('d-m-Y'),
+                Tables\Columns\TextColumn::make('keterangan')
+                ->label('Keterangan')
+                ->sortable(),
             ])
             ->filters([
                 //
