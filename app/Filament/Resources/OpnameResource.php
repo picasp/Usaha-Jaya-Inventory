@@ -113,6 +113,7 @@ class OpnameResource extends Resource
                 Tables\Columns\TextColumn::make('tgl')
                 ->label('Tanggal')
                 ->sortable()
+                ->searchable()
                 ->dateTime('d-m-Y'),
             ])
             ->filters([

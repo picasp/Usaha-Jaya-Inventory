@@ -23,7 +23,7 @@ class SupplierResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationLabel = 'Daftar Supplier';
+    protected static ?string $navigationLabel = 'Daftar Pemasok';
 
     public static function form(Form $form): Form
     {
@@ -56,6 +56,7 @@ class SupplierResource extends Resource
             ->sortable(),
             Tables\Columns\TextColumn::make('keterangan')
             ->markdown()
+            ->searchable()
             ->sortable(),
         ])
             ->filters([

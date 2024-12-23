@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateOpname extends CreateRecord
 {
     protected static string $resource = OpnameResource::class;
+    protected static ?string $title = 'Stok Opname Baru';
 }

@@ -51,7 +51,7 @@ return [
 
     'summary' => [
 
-        'heading' => 'Jumlah',
+        'heading' => '',
 
         'subheadings' => [
             'all' => 'Total Semua',
@@ -70,7 +70,7 @@ return [
             ],
 
             'sum' => [
-                'label' => 'Sum',
+                'label' => 'Jumlah',
             ],
 
         ],
