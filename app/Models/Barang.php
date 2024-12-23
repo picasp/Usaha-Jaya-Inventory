@@ -30,4 +30,9 @@ class Barang extends Model
     {
         return $this->hasMany(TransaksiMasukItem::class);
     }
+
+    public function opname_item(): HasMany
+    {
+        return $this->hasMany(OpnameItem::class);
+    }
 }

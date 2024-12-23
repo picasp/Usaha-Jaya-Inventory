@@ -28,6 +28,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class TransaksiKeluarResource extends Resource
 {
@@ -187,7 +188,8 @@ class TransaksiKeluarResource extends Resource
                 ->sortable(),
                 Tables\Columns\TextColumn::make('nama_pembeli')
                 ->label('Nama Pembeli')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
                 Tables\Columns\TextColumn::make('total_harga')
                 ->label('Subtotal')
                 ->sortable()
@@ -200,7 +202,9 @@ class TransaksiKeluarResource extends Resource
             ])
             ->defaultSort('tgl_penjualan', 'desc')
             ->filters([
-                //
+                DateRangeFilter::make('tgl_penjualan')
+                ->label('Tanggal Penjualan')
+                ->placeholder('Pilih rentang tanggal'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
