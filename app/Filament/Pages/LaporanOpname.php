@@ -40,6 +40,7 @@ class LaporanOpname extends Page implements HasTable
                 ->select(
                     'opnames.tgl as Tanggal', // Alias for tgl
                     'barangs.nama_barang as NamaBarang', // Alias for nama_barang
+                    'barangs.kode_barang as KodeBarang', // Alias for kode_barang
                     'opname_items.id as item_id', // Alias for opname_items id
                     'opname_items.*' // Select all columns from opname_items
                 )
@@ -48,6 +49,10 @@ class LaporanOpname extends Page implements HasTable
                 TextColumn::make('Tanggal')
                 ->sortable()
                 ->dateTime('d/m/Y'),
+                TextColumn::make('KodeBarang')
+                    ->sortable()
+                    ->label('Kode Barang')
+                    ->getStateUsing(fn ($record) => $record->KodeBarang),
                 TextColumn::make('NamaBarang')
                     ->sortable()
                     ->label('Nama Barang')
@@ -232,6 +237,7 @@ class LaporanOpname extends Page implements HasTable
 
     public function exportPdf(Request $request)
     {
+        set_time_limit(300);
         $filterTanggal = $this->getTableFilterState('Tanggal') ?? [];
         $startDate = $request->input('start_date') ?? ($filterTanggal['start'] ?? null);
         $endDate = $request->input('end_date') ?? ($filterTanggal['end'] ?? null);
@@ -243,6 +249,7 @@ class LaporanOpname extends Page implements HasTable
         ->join('barangs', 'opname_items.barang_id', '=', 'barangs.id')
         ->join('opnames', 'opname_items.opname_id', '=', 'opnames.id')
         ->select(
+            'barangs.kode_barang as Kode Barang',
             'barangs.nama_barang as Nama Barang',
             'opnames.tgl as Tanggal',
             'opname_items.qty_sistem as Stok Sistem',
@@ -308,17 +315,29 @@ class LaporanOpname extends Page implements HasTable
             $query->whereBetween('opnames.tgl', [$startDate, $endDate]);
         }
     
-        $query->groupBy('barangs.nama_barang', 'opnames.tgl', 'opname_items.qty_sistem', 'opname_items.qty_fisik', 'opname_items.selisih', 'opname_items.keterangan');     
+        $query->groupBy('barangs.kode_barang', 'barangs.nama_barang', 'opnames.tgl', 'opname_items.qty_sistem', 'opname_items.qty_fisik', 'opname_items.selisih', 'opname_items.keterangan');     
         $data = $query->get();
+        $stampPath = public_path('img/stempel.png');
+        $ttdPath = public_path('img/ttd.png');
+        $stampBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($stampPath));
+        $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
         $pdfData = [
             'data' => $data,
+            'stampBase64' => $stampBase64,
+            'ttdBase64' => $ttdBase64,
             'dateRange' => $startDate && $endDate
                 ? Carbon::parse($startDate)->format('d/m/Y') . ' - ' . Carbon::parse($endDate)->format('d/m/Y')
                 : 'Semua Tanggal',
         ];
     
         // Load view untuk PDF
-        $pdf = PDF::loadView('laporan-opname-pdf', $pdfData);
+        $pdf = PDF::loadView('laporan-opname-pdf', $pdfData)
+        ->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'debugPng' => false,
+        ]);
     
         // Return PDF sebagai file download atau tampilkan langsung
         return $pdf->stream('laporan-opname.pdf');

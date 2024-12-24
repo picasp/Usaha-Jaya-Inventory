@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 // use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Barang extends Model
@@ -20,6 +21,17 @@ class Barang extends Model
         'harga_beli',
         'keterangan'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($barang) {
+            if (empty($barang->kode_barang)) {
+                $barang->kode_barang = strtoupper(Str::random(6));
+            }
+        });
+    }
 
     public function transaksi_keluar_item(): HasMany
     {

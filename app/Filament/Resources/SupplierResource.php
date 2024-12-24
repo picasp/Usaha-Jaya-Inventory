@@ -53,11 +53,33 @@ class SupplierResource extends Resource
             Tables\Columns\TextColumn::make('no_telp')
             ->sortable(),
             Tables\Columns\TextColumn::make('alamat')
-            ->sortable(),
+            ->sortable()
+            ->limit(20)
+            ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                $state = $column->getState();
+         
+                if (strlen($state) <= $column->getCharacterLimit()) {
+                    return null;
+                }
+         
+                // Only render the tooltip if the column content exceeds the length limit.
+                return $state;
+            }),
             Tables\Columns\TextColumn::make('keterangan')
             ->markdown()
             ->searchable()
-            ->sortable(),
+            ->sortable()
+            ->limit(20)
+            ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                $state = $column->getState();
+         
+                if (strlen($state) <= $column->getCharacterLimit()) {
+                    return null;
+                }
+         
+                // Only render the tooltip if the column content exceeds the length limit.
+                return $state;
+            }),
         ])
             ->filters([
                 //

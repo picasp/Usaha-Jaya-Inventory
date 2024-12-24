@@ -193,12 +193,21 @@ class TransaksiKeluarResource extends Resource
                 Tables\Columns\TextColumn::make('total_harga')
                 ->label('Subtotal')
                 ->sortable()
-                ->formatStateUsing(function ($state) {
-                    return 'Rp ' . number_format($state, 0, ',', '.');
-                }),
+                ->money('IDR', locale: 'id'),
                 Tables\Columns\TextColumn::make('keterangan')
                 ->markdown()
-                ->sortable(),
+                ->sortable()
+                ->limit(20)
+                ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    $state = $column->getState();
+             
+                    if (strlen($state) <= $column->getCharacterLimit()) {
+                        return null;
+                    }
+             
+                    // Only render the tooltip if the column content exceeds the length limit.
+                    return $state;
+                })
             ])
             ->defaultSort('tgl_penjualan', 'desc')
             ->filters([

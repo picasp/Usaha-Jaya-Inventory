@@ -117,7 +117,18 @@ class OpnameResource extends Resource
                 ->dateTime('d-m-Y'),
                 Tables\Columns\TextColumn::make('keterangan')
                 ->label('Keterangan')
-                ->sortable(),
+                ->sortable()
+                ->limit(20)
+                ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    $state = $column->getState();
+             
+                    if (strlen($state) <= $column->getCharacterLimit()) {
+                        return null;
+                    }
+             
+                    // Only render the tooltip if the column content exceeds the length limit.
+                    return $state;
+                }),
             ])
             ->filters([
                 //

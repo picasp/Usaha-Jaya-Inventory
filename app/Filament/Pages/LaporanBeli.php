@@ -47,6 +47,7 @@ class LaporanBeli extends Page implements HasTable
                 TextColumn::make('Tanggal')
                 ->sortable()
                 ->dateTime('d/m/Y'),
+                TextColumn::make('barang.kode_barang')->sortable()->label('Kode Barang'),
                 TextColumn::make('barang.nama_barang')->sortable()->label('Nama Barang'),
                 TextColumn::make('Supplier')
                     ->label('Pemasok')
@@ -247,6 +248,7 @@ class LaporanBeli extends Page implements HasTable
         ->join('suppliers', 'transaksi_masuks.supplier_id', '=', 'suppliers.id')
         ->select(
             'transaksi_masuks.tgl_pembelian as Tanggal',
+            'barangs.kode_barang as Kode Barang',
             'barangs.nama_barang as Nama Barang',
             'suppliers.nama_supplier as Supplier',
             'barangs.satuan as Satuan',
@@ -312,6 +314,7 @@ class LaporanBeli extends Page implements HasTable
         }
     
         $query->groupBy(
+            'barangs.kode_barang',
             'barangs.nama_barang',
             'barangs.satuan',
             'transaksi_masuks.tgl_pembelian',
@@ -320,8 +323,14 @@ class LaporanBeli extends Page implements HasTable
         );        
         $data = $query->get();
         $totalSum = $data->sum('Total Pengeluaran');
+        $stampPath = public_path('img/stempel.png');
+        $ttdPath = public_path('img/ttd.png');
+        $stampBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($stampPath));
+        $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
         $pdfData = [
             'data' => $data,
+            'stampBase64' => $stampBase64,
+            'ttdBase64' => $ttdBase64,
             'dateRange' => $startDate && $endDate
                 ? Carbon::parse($startDate)->format('d/m/Y') . ' - ' . Carbon::parse($endDate)->format('d/m/Y')
                 : 'Semua Tanggal',
@@ -329,7 +338,13 @@ class LaporanBeli extends Page implements HasTable
         ];
     
         // Load view untuk PDF
-        $pdf = PDF::loadView('laporan-beli-pdf', $pdfData);
+        $pdf = PDF::loadView('laporan-beli-pdf', $pdfData)
+        ->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'debugPng' => false,
+        ]);
     
         // Return PDF sebagai file download atau tampilkan langsung
         return $pdf->stream('laporan-beli.pdf');

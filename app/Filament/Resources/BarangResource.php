@@ -18,7 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-
+use Illuminate\Support\Str;
 
 class BarangResource extends Resource
 {
@@ -34,36 +34,44 @@ class BarangResource extends Resource
         ->schema([
             Section::make()
             ->schema([
-            TextInput::make('nama_barang')
-            ->required(),
-            TextInput::make('stok')
-            ->numeric()
-            ->required(),
-            Select::make('satuan')
-            ->options(['unit' => 'Unit', 'pcs' => 'PCS', 'kg' => 'KG', 'sak' => 'Sak', 'liter' => 'Liter'])
-            ->searchable()
-            ->native(false)
-            ->required(),
-            TextInput::make('harga_jual')
-            ->numeric()
-            ->prefix('Rp.')
-            ->required(),
-            TextInput::make('harga_beli')
-            ->numeric()
-            ->prefix('Rp.')
-            ->required(),
-            Textarea::make('keterangan')
-            ->columnSpan('full'),
-            ])
+                TextInput::make('kode_barang')
+                ->label('Kode Barang')
+                ->required()
+                ->disabled()
+                // Sembunyikan input pada halaman buat
+                ->hidden(fn ($record) => $record === null),
+                TextInput::make('nama_barang')
+                ->required(),
+                TextInput::make('stok')
+                ->numeric()
+                ->required(),
+                Select::make('satuan')
+                ->options(['unit' => 'Unit', 'pcs' => 'PCS', 'kg' => 'KG', 'sak' => 'Sak', 'liter' => 'Liter'])
+                ->searchable()
+                ->native(false)
+                ->required(),
+                TextInput::make('harga_jual')
+                ->numeric()
+                ->prefix('Rp.')
+                ->required(),
+                TextInput::make('harga_beli')
+                ->numeric()
+                ->prefix('Rp.')
+                ->required(),
+                Textarea::make('keterangan')
+                ->columnSpan('full'),
+                ])
             ->Columns(3)
             ]);
-            
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('kode_barang')
+                ->searchable()
+                ->sortable(),
                 Tables\Columns\TextColumn::make('nama_barang')
                 ->searchable()
                 ->sortable(),
@@ -73,13 +81,24 @@ class BarangResource extends Resource
                 ->sortable(),
                 Tables\Columns\TextColumn::make('harga_jual')
                 ->sortable()
-                ->prefix('Rp. '),
+                ->money('IDR', locale: 'id'),
                 Tables\Columns\TextColumn::make('harga_beli')
                 ->sortable()
-                ->prefix('Rp. '),
+                ->money('IDR', locale: 'id'),
                 Tables\Columns\TextColumn::make('keterangan')
                 ->markdown()
-                ->sortable(),
+                ->sortable()
+                ->limit(20)
+                ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    $state = $column->getState();
+             
+                    if (strlen($state) <= $column->getCharacterLimit()) {
+                        return null;
+                    }
+             
+                    // Only render the tooltip if the column content exceeds the length limit.
+                    return $state;
+                }),
             ])
             ->filters([
                 //
