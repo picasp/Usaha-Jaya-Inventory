@@ -21,7 +21,6 @@
             padding-right: 20px;
             font-size: 8pt;
             line-height: 1.5;
-            font-style: italic;
         }
 
         .header-left {
@@ -158,6 +157,7 @@
                 </td>
             </tr>
         </tfoot>
+        </table>
         <div class="signature-section">
             <p>Yogyakarta, {{ now()->locale('id')->translatedFormat('d F Y') }}</p>
             <p>UD. Usaha Jaya</p>
@@ -166,6 +166,5 @@
             <p>(Suryono)</p>
         </div>
     </div>
-    </table>
 </body>
 </html>
