@@ -21,6 +21,7 @@
             padding-right: 20px;
             font-size: 8pt;
             line-height: 1.5;
+            font-style: italic;
         }
 
         .header-left {

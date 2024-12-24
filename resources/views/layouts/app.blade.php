@@ -71,6 +71,28 @@
             width: 100%;
             font-size: 12px;
         }
+        .signature-section {
+            margin-top: 40px;
+            margin-left: 400px;
+            text-align: center;
+            position: relative;
+        }
+        .signature-section img.stamp {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-30deg);
+            max-width: 200px;
+            opacity: 0.8;
+        }
+        .signature-section img.signature {
+            max-width: 120px;
+            display: block;
+            margin: 0 auto;
+        }
+        .signature-section p {
+            margin: 0px 0;
+        }
     </style>
 </head>
 <body>

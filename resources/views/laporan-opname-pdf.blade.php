@@ -21,6 +21,7 @@
             padding-right: 20px;
             font-size: 8pt;
             line-height: 1.5;
+            font-style: italic;
         }
 
         .header-left {
@@ -105,7 +106,7 @@
     </style>
 </head>
 <body>
-<header>
+    <header>
         <div class="header-left">
             <p>Laporan Stok Opname UD. Usaha Jaya</p>
         </div>

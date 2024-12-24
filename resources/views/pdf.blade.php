@@ -4,13 +4,6 @@
 
 @section('content')
     <div class="nota">
-        <!-- <div class="header">
-            UD. USAHA JAYA
-        </div>
-        <div class="sub-header">
-            Jl. Swadaya 2 No.100b, Dero, Condongcatur, Kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakarta<br>
-            Telp. +62 858-0274-7974
-        </div> -->
         <table class="tabel-header" style='font-size:8pt; font-family:calibri; border-collapse: collapse;'>
             <td width='65%' style='padding-right:80px; vertical-align:top'>
                 <span style='font-size:12pt'><b>UD. USAHA JAYA</b></span></br>
@@ -25,9 +18,6 @@
         </table>
 
         <div class="content">
-            <!-- <p>Pamulang, {{ $transaksi->tgl_penjualan->format('d F Y') }}</p>
-            <p>Kepada Yth,</p>
-            <p>{{ $transaksi->nama_pembeli }}</p> -->
             <table class="tabel">
                 <thead>
 
@@ -53,14 +43,13 @@
                 </tr>
                 </tbody>
             </table>
-
-            <table font-size:7pt; cellspacing='2' class="tabel2">
-                <tr>
-                    <td align='center'>Diterima Oleh,</br></br><u>( {{ $transaksi->nama_pembeli }} )</u></td>
-                    <td style='padding:5px; text-align:left; width:30%'></td>
-                    <td align='center'>TTD,</br></br><u>( UD. Usaha Jaya )</u></td>
-                </tr>
-            </table>
+                <div class="signature-section">
+                <p>Yogyakarta, {{ now()->locale('id')->translatedFormat('d F Y') }}</p>
+                <p>UD. Usaha Jaya</p>
+                <img src="{{ $stampBase64 }}" alt="Stamp" class="stamp">
+                <img src="{{ $ttdBase64 }}" alt="Signature" class="signature">
+                <p>(Suryono)</p>
+            </div>
         </div>
 
         <div class="footer">
