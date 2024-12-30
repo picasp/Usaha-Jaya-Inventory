@@ -155,7 +155,10 @@ class TransaksiMasukResource extends Resource
                             ->modalWidth('lg');
                     }),
                     DatePicker::make('tgl_pembelian')
-                    ->required(),
+                    ->label('Tanggal')
+                    ->required()
+                    ->default(now())
+                    ->maxDate(now()),
                     Textarea::make('keterangan')
                     ->label('Keterangan')
                     ->columnSpan('full')

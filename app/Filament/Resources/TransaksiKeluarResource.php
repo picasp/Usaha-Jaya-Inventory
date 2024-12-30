@@ -167,7 +167,10 @@ class TransaksiKeluarResource extends Resource
                     ]),
 
                     DatePicker::make('tgl_penjualan')
-                    ->required(),
+                    ->label('Tanggal')
+                    ->required()
+                    ->default(now())
+                    ->maxDate(now()),
 
                     Textarea::make('keterangan')
                     ->label('Keterangan')

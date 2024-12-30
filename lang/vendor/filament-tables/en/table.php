@@ -138,7 +138,7 @@ return [
 
         'heading' => 'Filters',
 
-        'indicator' => 'Active filters',
+        'indicator' => 'Filter aktif',
 
         'multi_select' => [
             'placeholder' => 'All',

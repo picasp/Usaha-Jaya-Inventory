@@ -30,13 +30,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@email.com',
             'password' => Hash::make('admin123'),
         ]);
-        Barang::factory(50)->create();
-        Supplier::factory(10)->create();
-        TransaksiMasuk::factory(20)->create();
-        TransaksiKeluar::factory(30)->create();
-        TransaksiKeluarItem::factory(100)->create();
-        Opname::factory(10)->create();
-        TransaksiMasukItem::factory(50)->create();
-        OpnameItem::factory(30)->create();
+        // Barang::factory(50)->create();
+        // Supplier::factory(10)->create();
+        // TransaksiMasuk::factory(20)->create();
+        // TransaksiKeluar::factory(30)->create();
+        // TransaksiKeluarItem::factory(100)->create();
+        // Opname::factory(10)->create();
+        // TransaksiMasukItem::factory(50)->create();
+        // OpnameItem::factory(30)->create();
     }
 }

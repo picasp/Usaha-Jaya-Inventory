@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use Filament\Tables\Filters\Filter;
@@ -35,8 +36,9 @@ class OpnameResource extends Resource
             ->schema([
                 Section::make()
                 ->schema([
-                    DatePicker::make('tgl')
-                    ->label('Tanggal'),
+                    TextInput::make('nama')
+                    ->label('Nama Opname')
+                    ->required(),
 
                 ]),
                 Section::make()
@@ -110,25 +112,14 @@ class OpnameResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tgl')
+                Tables\Columns\TextColumn::make('created_at')
                 ->label('Tanggal')
                 ->sortable()
                 ->searchable()
                 ->dateTime('d-m-Y'),
-                Tables\Columns\TextColumn::make('keterangan')
-                ->label('Keterangan')
-                ->sortable()
-                ->limit(20)
-                ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
-                    $state = $column->getState();
-             
-                    if (strlen($state) <= $column->getCharacterLimit()) {
-                        return null;
-                    }
-             
-                    // Only render the tooltip if the column content exceeds the length limit.
-                    return $state;
-                }),
+                Tables\Columns\TextColumn::make('nama')
+                ->label('Nama')
+                ->sortable(),
             ])
             ->filters([
                 //

@@ -26,6 +26,7 @@ class LaporanJual extends Page implements HasTable
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Penjualan';
+    protected ?string $heading = '';
     protected static ?string $model = TransaksiKeluarItem::class;
     use interactsWithTable;
 

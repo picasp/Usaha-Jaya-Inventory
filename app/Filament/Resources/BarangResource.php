@@ -46,7 +46,7 @@ class BarangResource extends Resource
                 ->numeric()
                 ->required(),
                 Select::make('satuan')
-                ->options(['unit' => 'Unit', 'pcs' => 'PCS', 'kg' => 'KG', 'sak' => 'Sak', 'liter' => 'Liter'])
+                ->options(['Unit' => 'Unit', 'Pcs' => 'PCS', 'Kg' => 'KG', 'Sak' => 'Sak', 'Ltr' => 'Liter'])
                 ->searchable()
                 ->native(false)
                 ->required(),

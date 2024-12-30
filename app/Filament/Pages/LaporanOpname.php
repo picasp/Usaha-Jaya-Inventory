@@ -25,6 +25,7 @@ class LaporanOpname extends Page implements HasTable
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?string $navigationLabel = 'Laporan Stok Opname';
+    protected ?string $heading = '';
     protected static ?string $model = OpnameItem::class;
     use interactsWithTable;
 
@@ -38,7 +39,7 @@ class LaporanOpname extends Page implements HasTable
                 ->join('opnames', 'opname_items.opname_id', '=', 'opnames.id')
                 ->join('barangs', 'opname_items.barang_id', '=', 'barangs.id')
                 ->select(
-                    'opnames.tgl as Tanggal', // Alias for tgl
+                    'opnames.created_at as Tanggal', // Alias for created_at
                     'barangs.nama_barang as NamaBarang', // Alias for nama_barang
                     'barangs.kode_barang as KodeBarang', // Alias for kode_barang
                     'opname_items.id as item_id', // Alias for opname_items id
@@ -139,7 +140,7 @@ class LaporanOpname extends Page implements HasTable
                             return $query; // Kembalikan query tanpa filter jika nilai tidak dikenal
                     }
 
-                    return $query->whereBetween('opnames.tgl', [$startDate, $endDate]);
+                    return $query->whereBetween('opnames.created_at', [$startDate, $endDate]);
                 })
                 ->indicateUsing(function (array $data): array {
                     $indicators = [];
@@ -214,7 +215,7 @@ class LaporanOpname extends Page implements HasTable
                             $startDate = Carbon::parse($data['start'])->startOfDay();
                             $endDate = Carbon::parse($data['end'])->endOfDay();
     
-                            return $query->whereBetween('opnames.tgl', [$startDate, $endDate]);
+                            return $query->whereBetween('opnames.created_at', [$startDate, $endDate]);
                         }
     
                         return $query;
@@ -251,16 +252,16 @@ class LaporanOpname extends Page implements HasTable
         ->select(
             'barangs.kode_barang as Kode Barang',
             'barangs.nama_barang as Nama Barang',
-            'opnames.tgl as Tanggal',
+            'opnames.created_at as Tanggal',
             'opname_items.qty_sistem as Stok Sistem',
             'opname_items.qty_fisik as Stok Fisik',
             'opname_items.selisih as Selisih',
             'opname_items.keterangan as Keterangan'
         )
-        ->orderBy('opnames.tgl', 'desc');
+        ->orderBy('opnames.created_at', 'desc');
 
         if ($startDate && $endDate) {
-            $query->whereBetween('opnames.tgl', [
+            $query->whereBetween('opnames.created_at', [
                 Carbon::parse($startDate)->startOfDay(),
                 Carbon::parse($endDate)->endOfDay(),
             ]);
@@ -312,10 +313,10 @@ class LaporanOpname extends Page implements HasTable
             }
     
             // Apply the periode filter
-            $query->whereBetween('opnames.tgl', [$startDate, $endDate]);
+            $query->whereBetween('opnames.created_at', [$startDate, $endDate]);
         }
     
-        $query->groupBy('barangs.kode_barang', 'barangs.nama_barang', 'opnames.tgl', 'opname_items.qty_sistem', 'opname_items.qty_fisik', 'opname_items.selisih', 'opname_items.keterangan');     
+        $query->groupBy('barangs.kode_barang', 'barangs.nama_barang', 'opnames.created_at', 'opname_items.qty_sistem', 'opname_items.qty_fisik', 'opname_items.selisih', 'opname_items.keterangan');     
         $data = $query->get();
         $stampPath = public_path('img/stempel.png');
         $ttdPath = public_path('img/ttd.png');

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('opnames', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('tgl');
+            $table->string('nama')->nullable();
             $table->timestamps();
         });
     }
