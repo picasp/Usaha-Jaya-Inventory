@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Laporan Opname</title>
+    <title>Laporan Pembelian</title>
     <style>
         @page {
             margin: 50px 50px; /* Margin untuk semua halaman */
