@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BarangResource\Pages;
 use App\Filament\Resources\BarangResource\RelationManagers;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Barang;
 use Filament\Actions\DeleteAction;
 use Filament\Forms;
@@ -23,10 +24,9 @@ use Illuminate\Support\Str;
 class BarangResource extends Resource
 {
     protected static ?string $model = Barang::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-cube';
-
     protected static ?string $navigationLabel = 'Daftar Barang';
+    protected static ?string $breadcrumb = "Daftar Barang";
 
     public static function form(Form $form): Form
     {
@@ -43,6 +43,9 @@ class BarangResource extends Resource
                 TextInput::make('nama_barang')
                 ->required(),
                 TextInput::make('stok')
+                ->numeric()
+                ->required(),
+                TextInput::make('stok_minimal')
                 ->numeric()
                 ->required(),
                 Select::make('satuan')
@@ -64,10 +67,15 @@ class BarangResource extends Resource
             ->Columns(3)
             ]);
     }
-
+    
     public static function table(Table $table): Table
     {
         return $table
+        ->emptyStateHeading('Tidak ada barang')
+        ->emptyStateDescription('Ketika Anda menambahkan barang, Anda akan melihat barang di sini.')
+        ->recordClasses(fn (Model $record) => $record->stok <= $record->stok_minimal 
+        ? 'bg-low-stock' 
+        : null)
             ->columns([
                 Tables\Columns\TextColumn::make('kode_barang')
                 ->searchable()
@@ -99,7 +107,10 @@ class BarangResource extends Resource
                     // Only render the tooltip if the column content exceeds the length limit.
                     return $state;
                 }),
+                Tables\Columns\TextColumn::make('status') // Menampilkan kolom status
+                ->sortable(),
             ])
+            ->defaultSort('status', 'desc')
             ->filters([
                 //
             ])
@@ -108,6 +119,11 @@ class BarangResource extends Resource
                 ->color('warning'),
                 Tables\Actions\DeleteAction::make()
                 ->label('Hapus')
+                ->successNotificationTitle('Barang berhasil dihapus')
+                ->modalHeading('Hapus Barang')
+                ->modalDescription('Apakah anda yakin ingin menghapus barang ini?')
+                ->modalCancelActionLabel('Batal')
+                ->modalSubmitActionLabel('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

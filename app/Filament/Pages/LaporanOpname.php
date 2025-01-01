@@ -34,6 +34,7 @@ class LaporanOpname extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('Tidak ada data opname')
             ->query(
                 OpnameItem::query()
                 ->join('opnames', 'opname_items.opname_id', '=', 'opnames.id')

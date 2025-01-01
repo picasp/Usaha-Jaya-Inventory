@@ -25,10 +25,9 @@ use Filament\Tables\Filters\Filter;
 class OpnameResource extends Resource
 {
     protected static ?string $model = Opname::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-
     protected static ?string $navigationLabel = 'Stok Opname';
+    protected static ?string $breadcrumb = "Stok Opname";
 
     public static function form(Form $form): Form
     {
@@ -111,6 +110,8 @@ class OpnameResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('Tidak ada stok opname')
+            ->emptyStateDescription('Ketika Anda menambahkan stok opname, Anda akan melihat stok opname di sini.')
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
                 ->label('Tanggal')
@@ -129,6 +130,11 @@ class OpnameResource extends Resource
                 ->color('warning'),
                 Tables\Actions\DeleteAction::make()
                 ->label('Hapus')
+                ->successNotificationTitle('Stok Opname berhasil dihapus')
+                ->modalHeading('Hapus Stok Opname')
+                ->modalDescription('Apakah anda yakin ingin menghapus stok opname ini?')
+                ->modalCancelActionLabel('Batal')
+                ->modalSubmitActionLabel('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

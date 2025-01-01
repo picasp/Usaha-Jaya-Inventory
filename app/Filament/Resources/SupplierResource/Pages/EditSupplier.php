@@ -10,6 +10,11 @@ class EditSupplier extends EditRecord
 {
     protected static string $resource = SupplierResource::class;
     protected static ?string $title = 'Edit Pemasok';
+    protected static ?string $breadcrumb = "Edit";
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     protected function getHeaderActions(): array
     {
@@ -17,5 +22,9 @@ class EditSupplier extends EditRecord
             Actions\DeleteAction::make()
             ->label('Hapus'),
         ];
+    }
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Pemasok berhasil diubah';
     }
 }

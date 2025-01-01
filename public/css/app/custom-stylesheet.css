@@ -1,0 +1,8 @@
+
+.bg-low-stock {
+    background-color: #ffe5e5; 
+}
+
+.dark .bg-low-stock {
+    background-color: #5f1a1a;
+}

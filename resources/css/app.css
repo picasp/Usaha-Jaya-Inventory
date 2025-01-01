@@ -1,4 +1,9 @@
 /* CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
 .button-3 {
   appearance: none;
   background-color: #2ea44f;

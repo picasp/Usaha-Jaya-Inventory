@@ -15,11 +15,16 @@ class Barang extends Model
     // use SoftDeletes;
 
     protected $fillable = [
+        'kode_barang',
         'nama_barang', 
         'stok', 
+        'stok_minimal',
+        'satuan',
         'harga_jual', 
         'harga_beli',
-        'keterangan'
+        'keterangan',
+        'status'
+
     ];
 
     protected static function boot()
@@ -30,6 +35,11 @@ class Barang extends Model
             if (empty($barang->kode_barang)) {
                 $barang->kode_barang = strtoupper(Str::random(6));
             }
+        });
+
+        static::saving(function ($barang) {
+            // Set status berdasarkan stok dan stok_minimal
+            $barang->status = $barang->stok <= $barang->stok_minimal ? 'Kritis' : 'Aman';
         });
     }
 

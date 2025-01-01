@@ -35,6 +35,7 @@ class LaporanJual extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('Tidak ada data penjualan')
             ->query(
                 TransaksiKeluarItem::query()
                 ->join('transaksi_keluars', 'transaksi_keluar_items.transaksi_keluar_id', '=', 'transaksi_keluars.id')

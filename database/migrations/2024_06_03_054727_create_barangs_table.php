@@ -16,10 +16,12 @@ return new class extends Migration
             $table->string('kode_barang')->unique();
             $table->string('nama_barang');
             $table->integer('stok');
+            $table->integer('stok_minimal');
             $table->string('satuan');
             $table->integer('harga_jual');
             $table->integer('harga_beli');
             $table->text('keterangan')->nullable();
+            $table->string('status')->default('Aman');
             $table->timestamps();
         });
     }

@@ -14,34 +14,13 @@ class CreateTransaksiKeluar extends CreateRecord
 {
     protected static string $resource = TransaksiKeluarResource::class;
     protected static ?string $title = 'Penjualan Baru';
-    
-    // protected function mutateFormDataBeforeCreate(array $data): array
-    // {
-    //     // foreach ($data['transaksi_keluar_item'] as $item) {
-    //     //     $product = Barang::find($item['barang_id']);
-    //     //     $product->stok -= $item['qty'];
-    //     //     $product->save();
-    //     // }
-
-    //     foreach ($data['transaksi_keluar_item'] as $item) {
-    //         $product = Barang::find($item['barang_id']);
-    //         if ($product) {
-    //             if ($product->stok >= $item['qty']) {
-    //                 $product->stok -= $item['qty'];
-    //                 $product->save();
-    //             } else {
-    //                 // Handle insufficient stock scenario
-    //                 throw new \Exception("Not enough stock for product: " . $product->nama_barang);
-    //             }
-    //         }
-    //     }
-        
-
-    //     return $data;
-    // }
-
-    public function afterSave(): void
+    protected static ?string $breadcrumb = "Tambah";
+    protected function getRedirectUrl(): string
     {
-
+        return $this->getResource()::getUrl('index');
     }
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Penjualan berhasil ditambahkan';
     }
+}

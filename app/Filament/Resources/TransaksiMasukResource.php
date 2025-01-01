@@ -27,10 +27,9 @@ use Filament\Forms\Components\DatePicker;
 class TransaksiMasukResource extends Resource
 {
     protected static ?string $model = TransaksiMasuk::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-
     protected static ?string $navigationLabel = 'Pembelian';
+    protected static ?string $breadcrumb = "Pembelian";
 
     public static function form(Form $form): Form
     {
@@ -170,6 +169,8 @@ class TransaksiMasukResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('Tidak ada pembelian')
+            ->emptyStateDescription('Ketika Anda menambahkan pembelian, Anda akan melihat pembelian di sini.')
             ->columns([
                 Tables\Columns\TextColumn::make('tgl_pembelian')
                 ->label('Tanggal')
@@ -209,6 +210,11 @@ class TransaksiMasukResource extends Resource
                 ->color('warning'),
                 Tables\Actions\DeleteAction::make()
                 ->label('Hapus')
+                ->successNotificationTitle('Pembelian berhasil dihapus')
+                ->modalHeading('Hapus Pembelian')
+                ->modalDescription('Apakah anda yakin ingin menghapus pembelian ini?')
+                ->modalCancelActionLabel('Batal')
+                ->modalSubmitActionLabel('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

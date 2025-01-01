@@ -20,10 +20,9 @@ use Filament\Forms\Components\Textarea;
 class SupplierResource extends Resource
 {
     protected static ?string $model = Supplier::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-truck';
-
     protected static ?string $navigationLabel = 'Daftar Pemasok';
+    protected static ?string $breadcrumb = "Daftar Pemasok";
 
     public static function form(Form $form): Form
     {
@@ -46,6 +45,8 @@ class SupplierResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->emptyStateHeading('Tidak ada pemasok')
+        ->emptyStateDescription('Ketika Anda menambahkan pemasok, Anda akan melihat daftar pemasok di sini.')
         ->columns([
             Tables\Columns\TextColumn::make('nama_supplier')
             ->searchable()
@@ -89,6 +90,11 @@ class SupplierResource extends Resource
                 ->color('warning'),
                 Tables\Actions\DeleteAction::make()
                 ->label('Hapus')
+                ->successNotificationTitle('Pemasok berhasil dihapus')
+                ->modalHeading('Hapus Pemasok')
+                ->modalDescription('Apakah Anda yakin ingin menghapus pemasok ini?')
+                ->modalCancelActionLabel('Batal')
+                ->modalSubmitActionLabel('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

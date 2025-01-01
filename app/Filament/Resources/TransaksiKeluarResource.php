@@ -33,10 +33,9 @@ use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 class TransaksiKeluarResource extends Resource
 {
     protected static ?string $model = TransaksiKeluar::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-
     protected static ?string $navigationLabel = 'Penjualan';
+    protected static ?string $breadcrumb = "Penjualan";
 
     public static function form(Form $form): Form
     {
@@ -183,6 +182,8 @@ class TransaksiKeluarResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('Tidak ada penjualan')
+            ->emptyStateDescription('Ketika Anda menambahkan penjualan, Anda akan melihat penjualan di sini.')
             ->columns([
                 Tables\Columns\TextColumn::make('tgl_penjualan')
                 ->label('Tanggal')
@@ -232,6 +233,11 @@ class TransaksiKeluarResource extends Resource
                 ->openUrlInNewTab(), 
                 Tables\Actions\DeleteAction::make()
                 ->label('Hapus')
+                ->successNotificationTitle('Penjualan berhasil dihapus')
+                ->modalHeading('Hapus Penjualan')
+                ->modalDescription('Apakah anda yakin ingin menghapus penjualan ini?')
+                ->modalCancelActionLabel('Batal')
+                ->modalSubmitActionLabel('Hapus')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

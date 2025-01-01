@@ -33,6 +33,7 @@ class LaporanBeli extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->emptyStateHeading('Tidak ada data Pembelian')
             ->query(
                 TransaksiMasukItem::query()
                 ->join('transaksi_masuks', 'transaksi_masuk_items.transaksi_masuk_id', '=', 'transaksi_masuks.id')

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Facades\Filament;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+
     }
 
     /**
@@ -33,5 +35,13 @@ class AppServiceProvider extends ServiceProvider
         TransaksiKeluar::observe(TransaksiKeluarObserver::class);
         TransaksiKeluarItem::observe(TransaksiKeluarItemObserver::class);
         TransaksiMasukItem::observe(TransaksiMasukItemObserver::class);
+        FilamentAsset::register([
+            Css::make('custom-stylesheet', __DIR__ . '/../../resources/css/filament.css'),
+        ]);
+        // Filament::serving(function () {
+        //     Filament::registerStyles([
+        //         asset('css/filament.css'), // Path ke file CSS Anda
+        //     ]);
+        // });
     }
 }

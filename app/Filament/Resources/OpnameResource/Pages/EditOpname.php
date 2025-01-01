@@ -10,6 +10,11 @@ class EditOpname extends EditRecord
 {
     protected static string $resource = OpnameResource::class;
     protected static ?string $title = 'Edit Stok Opname';
+    protected static ?string $breadcrumb = "Edit";
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     protected function getHeaderActions(): array
     {
@@ -17,5 +22,9 @@ class EditOpname extends EditRecord
             Actions\DeleteAction::make()
             ->label('Hapus'),
         ];
+    }
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Stok Opname berhasil diubah';
     }
 }
