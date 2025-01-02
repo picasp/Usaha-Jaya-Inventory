@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SupplierResource\Pages;
 use App\Filament\Resources\SupplierResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\Action;
 
 class EditSupplier extends EditRecord
 {
@@ -26,5 +27,15 @@ class EditSupplier extends EditRecord
     protected function getSavedNotificationTitle(): ?string
     {
         return 'Pemasok berhasil diubah';
+    }
+    protected function getSaveFormAction(): Action
+    {
+         return parent::getSaveFormAction()
+             ->label('Simpan');
+    }
+    protected function getCancelFormAction(): Action
+    {
+         return parent::getCancelFormAction()
+             ->label('Batal');
     }
 }

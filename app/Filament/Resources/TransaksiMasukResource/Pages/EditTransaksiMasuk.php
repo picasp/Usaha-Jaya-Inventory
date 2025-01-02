@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TransaksiMasukResource\Pages;
 use App\Filament\Resources\TransaksiMasukResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\Action;
 
 class EditTransaksiMasuk extends EditRecord
 {
@@ -26,5 +27,15 @@ class EditTransaksiMasuk extends EditRecord
     protected function getSavedNotificationTitle(): ?string
     {
         return 'Pembelian berhasil diubah';
+    }
+    protected function getSaveFormAction(): Action
+    {
+         return parent::getSaveFormAction()
+             ->label('Simpan');
+    }
+    protected function getCancelFormAction(): Action
+    {
+         return parent::getCancelFormAction()
+             ->label('Batal');
     }
 }

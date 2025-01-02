@@ -220,9 +220,8 @@ class TransaksiKeluarResource extends Resource
                 ->placeholder('Pilih rentang tanggal'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                ->label('Lihat')
-                ->hidden(),
+                // Tables\Actions\ViewAction::make()
+                // ->label('Lihat'),
                 Tables\Actions\EditAction::make()
                 ->color('warning'),
                 Tables\Actions\Action::make('pdf') 

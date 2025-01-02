@@ -5,6 +5,7 @@ namespace App\Filament\Resources\BarangResource\Pages;
 use App\Filament\Resources\BarangResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\Action;
 
 class EditBarang extends EditRecord
 {
@@ -27,5 +28,15 @@ class EditBarang extends EditRecord
     protected function getSavedNotificationTitle(): ?string
     {
         return 'Barang berhasil diubah';
+    }
+    protected function getSaveFormAction(): Action
+    {
+         return parent::getSaveFormAction()
+             ->label('Simpan');
+    }
+    protected function getCancelFormAction(): Action
+    {
+         return parent::getCancelFormAction()
+             ->label('Batal');
     }
 }
